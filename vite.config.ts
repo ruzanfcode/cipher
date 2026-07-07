@@ -24,6 +24,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  base: '/cipher/',
   resolve: {
     alias: {
       // Alias @ to the src directory
