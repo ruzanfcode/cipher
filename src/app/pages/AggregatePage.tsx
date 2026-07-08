@@ -18,7 +18,7 @@ import type { Product } from "@/app/types";
 export function AggregatePage({ products, onCompare }: { products: Product[]; onCompare: (products: Product[]) => void }) {
   const [selectedIds, setSelectedIds] = useState<number[]>(products.map(p => p.id));
   const [insightView, setInsightView]         = useState<"overview" | "heatmap" | "attributes">("overview");
-  const [showHeatmapValues, setShowHeatmapValues] = useState(true);
+  const [showHeatmapValues, setShowHeatmapValues] = useState(false);
   const [attributeSorts, setAttributeSorts] = useState<Record<string, AttributeSortDirection>>({});
   const [reviewFilter, setReviewFilter] = useState<{
     product?: Product;
@@ -86,7 +86,7 @@ export function AggregatePage({ products, onCompare }: { products: Product[]; on
   return (
     <div>
       <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-7 pb-4 sm:pb-6">
-        <h1 className="font-black text-foreground uppercase tracking-tight mb-6 text-[28px] sm:text-[36px] lg:text-[44px]">Aggregate Analysis</h1>
+        <h1 className="page-heading-sm mb-6">Aggregate Analysis</h1>
         <ProductSelectorStrip
           products={products} selectedIds={selectedIds} onToggle={toggleSelect}
           onSelectAll={() => setSelectedIds(products.map(p => p.id))} onClear={() => setSelectedIds([])}
@@ -192,7 +192,7 @@ export function AggregatePage({ products, onCompare }: { products: Product[]; on
                   </div>
                 </>
               ) : insightView === "attributes" ? (
-                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                <div className="grid grid-cols-1 gap-10 xl:grid-cols-2">
                   {attributeCharts.map(chart => {
                     const positiveSort = sortDirectionFor(chart.attributeIndex, "positive");
                     const negativeSort = sortDirectionFor(chart.attributeIndex, "negative");
@@ -209,6 +209,7 @@ export function AggregatePage({ products, onCompare }: { products: Product[]; on
                         negativeSort={negativeSort}
                         onTogglePositiveSort={() => toggleAttributeSort(chart.attributeIndex, "positive")}
                         onToggleNegativeSort={() => toggleAttributeSort(chart.attributeIndex, "negative")}
+                        onSentimentClick={({ product, attribute, rangeLabel, score }) => setReviewFilter({ product, attribute, rangeLabel, score })}
                       />
                     );
                   })}

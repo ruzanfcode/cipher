@@ -35,6 +35,16 @@ export const collectionSlice = createSlice({
     shareSavedCollection: (state, action: PayloadAction<SavedCollection[]>) => {
       state.savedCollections.push(...action.payload);
     },
+    stopSharingSavedCollection: (state, action: PayloadAction<number>) => {
+      state.savedCollections = state.savedCollections.filter(collection => collection.sharedFromId !== action.payload);
+    },
+    removeProductFromSavedCollection: (state, action: PayloadAction<{ collectionId: number; productId: number }>) => {
+      state.savedCollections = state.savedCollections.map(collection => {
+        const isTargetCollection = collection.id === action.payload.collectionId || collection.sharedFromId === action.payload.collectionId;
+        if (!isTargetCollection) return collection;
+        return { ...collection, productIds: collection.productIds.filter(id => id !== action.payload.productId) };
+      });
+    },
     setProductCollectionAssignments: (state, action: PayloadAction<{ productId: number; collectionIds: number[]; owner: string; ownerId: string }>) => {
       state.savedCollections = state.savedCollections.map(collection => {
         const isOwner = collection.ownerId ? collection.ownerId === action.payload.ownerId : collection.owner === action.payload.owner;
@@ -57,5 +67,5 @@ export const collectionSlice = createSlice({
   },
 });
 
-export const { addToCollection, removeFromCollection, saveCollection, createSavedCollection, shareSavedCollection, setProductCollectionAssignments, deleteSavedCollection } = collectionSlice.actions;
+export const { addToCollection, removeFromCollection, saveCollection, createSavedCollection, shareSavedCollection, stopSharingSavedCollection, removeProductFromSavedCollection, setProductCollectionAssignments, deleteSavedCollection } = collectionSlice.actions;
 export default collectionSlice.reducer;

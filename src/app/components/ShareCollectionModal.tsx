@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Share2, Users, X } from "lucide-react";
+import { cx } from "@/app/lib/utils";
 import type { SavedCollection } from "@/app/types";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidEmail(value: string) {
+  return EMAIL_PATTERN.test(value.trim());
+}
 
 function parseRecipients(value: string) {
   return value.split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
@@ -26,8 +33,11 @@ export function ShareCollectionModal({
   onClose: () => void;
 }) {
   const [recipientDraft, setRecipientDraft] = useState("");
+  const [recipientError, setRecipientError] = useState("");
   const recipientList = uniqueRecipients(parseRecipients(recipients));
   const recipientCount = recipientList.length;
+  const invalidRecipients = recipientList.filter(recipient => !isValidEmail(recipient));
+  const hasInvalidRecipients = invalidRecipients.length > 0;
 
   const updateRecipients = (nextRecipients: string[]) => {
     onRecipientsChange(uniqueRecipients(nextRecipients).join(", "));
@@ -36,19 +46,31 @@ export function ShareCollectionModal({
   const commitDraft = () => {
     const draftRecipients = parseRecipients(recipientDraft);
     if (draftRecipients.length === 0) return recipientList;
+    const invalidDraftRecipients = draftRecipients.filter(recipient => !isValidEmail(recipient));
+    if (invalidDraftRecipients.length > 0) {
+      setRecipientError(`Enter a valid email address${invalidDraftRecipients.length > 1 ? "es" : ""}.`);
+      return recipientList;
+    }
     const nextRecipients = uniqueRecipients([...recipientList, ...draftRecipients]);
     updateRecipients(nextRecipients);
     setRecipientDraft("");
+    setRecipientError("");
     return nextRecipients;
   };
 
   const removeRecipient = (recipient: string) => {
     updateRecipients(recipientList.filter(item => item !== recipient));
+    if (recipientError) setRecipientError("");
   };
 
   const handleShare = () => {
     const nextRecipients = commitDraft();
     if (nextRecipients.length === 0) return;
+    const invalidNextRecipients = nextRecipients.filter(recipient => !isValidEmail(recipient));
+    if (invalidNextRecipients.length > 0) {
+      setRecipientError("Remove invalid email addresses before sharing.");
+      return;
+    }
     onShare(nextRecipients.join(", "));
   };
 
@@ -72,9 +94,9 @@ export function ShareCollectionModal({
 
         <div className="px-6 py-5">
           <label className="text-xs font-black uppercase tracking-[0.16em] text-foreground">Users</label>
-          <div className="mt-2 flex min-h-28 w-full flex-wrap content-start gap-2 rounded-2xl border border-border bg-background px-3 py-3 transition-all focus-within:border-primary">
+          <div className={cx("mt-2 flex min-h-28 w-full flex-wrap content-start gap-2 rounded-2xl border bg-background px-3 py-3 transition-all", recipientError || hasInvalidRecipients ? "border-red-400 focus-within:border-red-400" : "border-border focus-within:border-primary")}>
             {recipientList.map(recipient => (
-              <span key={recipient} className="group relative inline-flex h-8 max-w-full items-center gap-2 rounded-full border border-primary/20 bg-primary/10 pl-3 pr-1.5 text-xs font-bold text-primary">
+              <span key={recipient} className={cx("group relative inline-flex h-8 max-w-full items-center gap-2 rounded-full border pl-3 pr-1.5 text-xs font-bold", isValidEmail(recipient) ? "border-primary/20 bg-primary/10 text-primary" : "border-red-300 bg-red-50 text-red-600")}>
                 <span className="max-w-[220px] truncate">{recipient}</span>
                 <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 max-w-[280px] -translate-x-1/2 scale-95 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold normal-case tracking-normal text-white opacity-0 shadow-xl shadow-slate-950/20 transition-all group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100">
                   {recipient}
@@ -91,7 +113,7 @@ export function ShareCollectionModal({
             ))}
             <input
               value={recipientDraft}
-              onChange={event => setRecipientDraft(event.target.value)}
+              onChange={event => { setRecipientDraft(event.target.value); if (recipientError) setRecipientError(""); }}
               onKeyDown={event => {
                 if (["Enter", ",", "Tab"].includes(event.key)) {
                   event.preventDefault();
@@ -106,13 +128,25 @@ export function ShareCollectionModal({
                 const pastedText = event.clipboardData.getData("text");
                 if (!/[\n,]/.test(pastedText)) return;
                 event.preventDefault();
-                updateRecipients([...recipientList, ...parseRecipients(pastedText)]);
+                const pastedRecipients = parseRecipients(pastedText);
+                const invalidPastedRecipients = pastedRecipients.filter(recipient => !isValidEmail(recipient));
+                if (invalidPastedRecipients.length > 0) {
+                  setRecipientError("Pasted list contains invalid email addresses.");
+                  return;
+                }
+                updateRecipients([...recipientList, ...pastedRecipients]);
+                setRecipientError("");
               }}
               autoFocus
               placeholder={recipientList.length === 0 ? "Add users by email" : "Add another"}
               className="h-8 min-w-[180px] flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
           </div>
+          {(recipientError || hasInvalidRecipients) && (
+            <p className="mt-1.5 text-xs font-medium text-red-500">
+              {recipientError || "Remove invalid email addresses before sharing."}
+            </p>
+          )}
           <div className="mt-3 flex items-center justify-between rounded-xl border border-border bg-background px-3.5 py-2.5">
             <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
               <Users size={14} />
@@ -126,7 +160,7 @@ export function ShareCollectionModal({
           <button onClick={onClose} className="h-10 rounded-xl border border-border px-4 text-xs font-bold text-foreground transition-colors hover:bg-accent">Cancel</button>
           <button
             onClick={handleShare}
-            disabled={recipientCount === 0 && !recipientDraft.trim()}
+            disabled={(recipientCount === 0 && !recipientDraft.trim()) || hasInvalidRecipients}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-xs font-black uppercase tracking-[0.12em] text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
           >
             <Share2 size={14} /> Share

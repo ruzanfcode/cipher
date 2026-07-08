@@ -111,12 +111,12 @@ export function SearchPage({
 
   return (
     <div>
-      <div className="px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-8 sm:pb-12 text-center">
-        <h1 className="font-black text-foreground tracking-tight text-[32px] sm:text-[42px] lg:text-[52px]">Discover Products</h1>
-        <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.35em] text-muted-foreground">Uncover consumer sentiment and insights across products</p>
+      <div className="px-4 sm:px-6 lg:px-8 pt-14 sm:pt-16 lg:pt-[4.25rem] pb-8 sm:pb-12 text-center">
+        <h1 className="page-heading">Discover Products</h1>
+        <p className="mt-3 text-[11px] font-bold capitalize tracking-[0.35em] text-muted-foreground">Uncover consumer sentiment and insights across products</p>
       </div>
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 pb-12 space-y-6">
-      <div className="bg-card rounded-2xl border border-border shadow-sm p-6 sm:p-8 lg:p-10 transition-colors duration-200 hover:bg-[#e5e7eb] dark:hover:bg-[#e7ebf0] dark:hover:border-[#d8dde5] dark:hover:shadow-none">
+      <div className="mx-auto mt-4 sm:mt-6 lg:mt-8 px-4 sm:px-6 lg:px-8 pb-12 space-y-6">
+      <div className="bg-card rounded-2xl border border-border shadow-sm p-6 sm:p-8 lg:p-10 transition-colors duration-200  dark:hover:bg-card dark:hover:border-border dark:hover:shadow-sm">
       {/* Search panel */}
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-end mb-4">
@@ -151,10 +151,10 @@ export function SearchPage({
       {/* Brand filter — only shown when not searching */}
       {!isSearching && (
         <div className="max-w-8xl mx-auto mt-12">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-end mb-4">
             {selectedBrands.length > 0 && (
-              <button onClick={onClearBrands} className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                <X size={11} /> Clear all
+              <button onClick={onClearBrands} className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
+                Reset filter ({selectedBrands.length}) <X size={11} />
               </button>
             )}
           </div>
@@ -184,7 +184,7 @@ export function SearchPage({
       {/* Search results */}
       {isSearching && (
         <div className="max-w-8xl mx-auto mt-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-border">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground text-xxs">
               {filteredProducts.length} Result{filteredProducts.length !== 1 ? "s" : ""} Found
             </p>
@@ -210,7 +210,7 @@ export function SearchPage({
               <p className="text-sm font-medium">No products matched</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredProducts.map(product => {
                 const added = editableCollections.some(collection => collection.productIds.includes(product.id));
                 const productCategory = product.category.replace(/\s+/g, "_").toUpperCase();
@@ -221,15 +221,15 @@ export function SearchPage({
                       : "border-white/70 dark:border-border dark:hover:border-primary/30"
                   )}>
                     <div className="relative aspect-[1.02] overflow-hidden rounded-2xl bg-muted border border-white shadow-sm shrink-0">
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:blur-sm" />
-                      <div className="absolute inset-0 flex items-center justify-center bg-slate-100/35 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-slate-950/30">
-                        <div className="w-[86%] rounded-xl bg-white/70 p-2.5 shadow-2xl shadow-slate-900/15 backdrop-blur-md dark:bg-white/75">
-                          <button onClick={() => onAnalyze(product)} className="w-full h-10 rounded-lg bg-slate-950 text-white text-[11px] font-black uppercase tracking-[0.12em] hover:bg-slate-800 transition-colors">
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-all duration-500 2xl:group-hover:scale-105 2xl:group-hover:blur-sm" />
+                      <div className="pointer-events-none absolute inset-0 hidden items-center justify-center bg-slate-100/35 p-3 opacity-0 transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 dark:bg-slate-950/30 2xl:flex">
+                        <div className="w-full">
+                          <button onClick={() => onAnalyze(product)} className="w-full h-10 rounded-lg bg-slate-950 text-white text-[11px] font-black uppercase tracking-[0.1em] hover:bg-slate-800 transition-colors">
                             Analyze Now
                           </button>
                           <button
                             onClick={() => openCollectionModal(product)}
-                            className={cx("mt-2 w-full h-10 rounded-lg text-[11px] font-black uppercase tracking-[0.12em] transition-colors flex items-center justify-center gap-2",
+                            className={cx("mt-2 w-full h-10 rounded-lg text-[11px] font-black uppercase tracking-[0.1em] transition-colors flex items-center justify-center gap-2",
                               added
                                 ? "bg-emerald-600 text-white hover:bg-emerald-700"
                                 : "bg-primary text-white hover:bg-primary/90"
@@ -238,11 +238,30 @@ export function SearchPage({
                             {added ? <Check size={14} /> : <Bookmark size={14} />}
                             <span>Add to a Collection</span>
                           </button>
-                          <button onClick={() => onAnalyze(product)} className="mt-2 w-full h-10 rounded-lg text-[11px] font-black uppercase tracking-[0.12em] text-slate-900 hover:bg-white/70 transition-colors flex items-center justify-center gap-2">
+                          <button onClick={() => onAnalyze(product)} className="mt-2 w-full h-10 rounded-lg bg-white text-[11px] font-black uppercase tracking-[0.1em] text-slate-900 shadow-sm transition-colors hover:bg-white/85 flex items-center justify-center gap-2">
                             <Link size={13} /> View Product
                           </button>
                         </div>
                       </div>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2 2xl:hidden">
+                      <button onClick={() => onAnalyze(product)} className="h-9 rounded-lg bg-slate-950 px-2 text-[10px] font-black uppercase tracking-[0.08em] text-white transition-colors hover:bg-slate-800">
+                        Analyze
+                      </button>
+                      <button onClick={() => onAnalyze(product)} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border px-2 text-[10px] font-black uppercase tracking-[0.08em] text-foreground transition-colors hover:border-primary/40 hover:text-primary">
+                        <Link size={12} /> View Product
+                      </button>
+                      <button
+                        onClick={() => openCollectionModal(product)}
+                        className={cx("col-span-2 flex h-9 items-center justify-center gap-2 rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.08em] text-white transition-colors",
+                          added
+                            ? "bg-emerald-600 hover:bg-emerald-700"
+                            : "bg-primary hover:bg-primary/90"
+                        )}
+                      >
+                        {added ? <Check size={13} /> : <Bookmark size={13} />}
+                        <span>Add to a Collection</span>
+                      </button>
                     </div>
                     <div className="pt-5 flex flex-col flex-1">
                       <div className="text-[11px] font-black uppercase tracking-[0.16em] text-primary mb-2">{productCategory}</div>

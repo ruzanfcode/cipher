@@ -30,10 +30,10 @@ export function ComparisonReviewFeed({ variant = "compact" }: { variant?: "compa
 
   return (
     <div className="h-full flex flex-col min-h-0 dark:bg-accent">
-      <div className={cx("flex flex-col shrink-0", isWide ? "gap-7 mb-10" : "gap-8 mb-14")}>
-        <div className="flex items-center justify-between gap-4 border-l-2 border-primary pl-5">
+      <div className={cx("flex flex-col shrink-0", isWide ? "gap-7 mb-10" : "gap-5 mb-8")}>
+        <div className={cx("flex gap-4 border-l-2 border-primary pl-5", isWide ? "items-center justify-between" : "flex-col items-start justify-start") }>
           <span className={cx("font-black uppercase tracking-[0.42em] text-slate-400 dark:text-muted-foreground", isWide ? "text-xs md:text-sm" : "text-[10px] sm:text-[11px]")}>Reviews Feed</span>
-          <div className={cx("relative", isWide ? "w-full max-w-sm" : "w-48")}>
+          <div className={cx("relative", isWide ? "w-full max-w-sm" : "w-full")}>
             <Search size={isWide ? 15 : 13} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               value={search}
@@ -47,7 +47,7 @@ export function ComparisonReviewFeed({ variant = "compact" }: { variant?: "compa
           </div>
         </div>
 
-        <div className={cx("grid gap-x-4 gap-y-6 px-5", isWide ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-2")}>
+        <div className={cx("grid", isWide ? "grid-cols-1 gap-x-4 gap-y-6 px-5 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-2 gap-x-3 gap-y-4 px-1") }>
           <div>
             <div className={labelCls}>Sort By</div>
             <select value={sortBy} onChange={e => setSortBy(e.target.value as "newest" | "oldest")} className={selectCls}>
@@ -131,7 +131,9 @@ export function ComparisonReviewFeed({ variant = "compact" }: { variant?: "compa
                 ))}
               </div>
             </div>
-            <p className={cx("font-semibold italic leading-[1.6] text-[#4b5563] dark:text-muted-foreground", isWide ? "text-sm md:text-base" : "text-[11px] sm:text-xs")}>"{review.text}"</p>
+              <p className="font-sans font-medium text-[#4b5563]" style={{ fontSize: "0.87rem", lineHeight: 1.625, opacity: 0.8 }}>
+                "{review.text}"
+              </p>
           </div>
         ))}
       </div>

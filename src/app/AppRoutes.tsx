@@ -11,6 +11,7 @@ import { SBUDetailsRoute }      from "@/app/pages/SBUDetailsPage";
 import { DataManagementPage }   from "@/app/pages/DataManagementPage";
 import { LoginPage }            from "@/app/pages/LoginPage";
 import { NotFoundPage }         from "@/app/pages/NotFoundPage";
+import { SBUS, USER_PROFILES }  from "@/data/mockData";
 
 import type { Role, Product, SearchMode } from "@/app/types";
 
@@ -46,10 +47,14 @@ export function AppRoutes({
   onSelectSBU,
   onLogin
 }: AppRoutesProps) {
+  const adminSBU = SBUS.find(sbu => sbu.name === USER_PROFILES[role].sbu);
+  const adminTarget = role === "sbu_admin" && adminSBU ? `/admin/user-management/${adminSBU.id}` : "/admin/user-management";
+  const sbuAdminAllowedSBUId = role === "sbu_admin" ? adminSBU?.id : undefined;
+
   return (
     <Routes>
-      <Route path="/analytics" element={<DashboardPage />} />
-      <Route path="/dashboard" element={<Navigate to="/analytics" replace />} />
+      <Route path="/analytics" element={role === "sbu_user" ? <Navigate to="/not-found" replace /> : <DashboardPage />} />
+      <Route path="/dashboard" element={role === "sbu_user" ? <Navigate to="/not-found" replace /> : <Navigate to="/analytics" replace />} />
       <Route
         path="/product-catalog"
         element={
@@ -75,13 +80,13 @@ export function AppRoutes({
         }
       />
       <Route path="/collection"        element={<Navigate to="/collections" replace />} />
-      <Route path="/admin"             element={<Navigate to="/admin/user-management" replace />} />
-      <Route path="/admin/user-management" element={<SBUPage role={role} onSelectSBU={sbu => onSelectSBU(sbu.id)} />} />
-      <Route path="/admin/data-management" element={<DataManagementPage />} />
-      <Route path="/sbu"               element={<Navigate to="/admin/user-management" replace />} />
+      <Route path="/admin"             element={<Navigate to={adminTarget} replace />} />
+      <Route path="/admin/user-management" element={role === "system_admin" ? <SBUPage role={role} onSelectSBU={sbu => onSelectSBU(sbu.id)} /> : <Navigate to="/not-found" replace />} />
+      <Route path="/admin/data-management" element={role === "system_admin" ? <DataManagementPage /> : <Navigate to="/not-found" replace />} />
+      <Route path="/sbu"               element={<Navigate to={adminTarget} replace />} />
       <Route path="/product/:productId" element={<ProductAnalysisRoute />} />
-      <Route path="/admin/user-management/:sbuId" element={<SBUDetailsRoute />} />
-      <Route path="/sbu/:sbuId"         element={<Navigate to="/admin/user-management/:sbuId" replace />} />
+      <Route path="/admin/user-management/:sbuId" element={<SBUDetailsRoute allowAccess={role !== "sbu_user"} allowedSBUId={sbuAdminAllowedSBUId} />} />
+      <Route path="/sbu/:sbuId"         element={<SBUDetailsRoute allowAccess={role !== "sbu_user"} allowedSBUId={sbuAdminAllowedSBUId} />} />
       <Route path="/comparison"         element={<ComparisonRoute onAggregate={onAggregate} />} />
       <Route path="/aggregate"          element={<AggregateRoute  onCompare={onCompare} />} />
       <Route path="/login"              element={<LoginPage onLogin={onLogin}/>} />

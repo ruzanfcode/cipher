@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Sun, Moon, Monitor, ArrowLeft, User, ChevronDown } from "lucide-react";
+import { Sun, Moon, Monitor, User, ChevronDown } from "lucide-react";
 import { CipherLogo } from "./CipherLogo";
 import { UserProfileDropdown } from "./UserProfileDropdown";
 import { USER_PROFILES } from "@/data/mockData";
 import { cx } from "@/app/lib/utils";
 import type { Role, HeaderTab, ThemeMode } from "@/app/types";
 
-export function AppHeader({ role, themeMode, onThemeChange, headerTab, adminSection, onHeaderTabChange, onAdminSectionChange, tempCollectionCount, showBack, onBack, onLogout }: {
+export function AppHeader({ role, themeMode, onThemeChange, headerTab, adminSection, onHeaderTabChange, onAdminSectionChange, tempCollectionCount, onLogout }: {
   role: Role;
   themeMode: ThemeMode;
   onThemeChange: (t: ThemeMode) => void;
@@ -15,19 +15,19 @@ export function AppHeader({ role, themeMode, onThemeChange, headerTab, adminSect
   onHeaderTabChange: (t: HeaderTab) => void;
   onAdminSectionChange: (section: "user-management" | "data-management") => void;
   tempCollectionCount: number;
-  showBack: boolean;
-  onBack: () => void;
   onLogout: () => void;
 }) {
   const [showProfile, setShowProfile] = useState(false);
   const [showAdminMenu, setShowAdminMenu] = useState(false);
   const profile = USER_PROFILES[role];
-  const showAdmin = role === "system_admin";
+  const showAdmin = role === "system_admin" || role === "sbu_admin";
+  const showAdminDropdown = role === "system_admin";
+  const showAnalytics = role !== "sbu_user";
 
   const tabs = [
     { id: "product-catalog" as HeaderTab, label: "DISCOVER" },
     { id: "collections" as HeaderTab, label: `COLLECTIONS${tempCollectionCount > 0 ? ` (${tempCollectionCount})` : ""}` },
-    { id: "analytics" as HeaderTab, label: "ANALYTICS" },
+    ...(showAnalytics ? [{ id: "analytics" as HeaderTab, label: "ANALYTICS" }] : []),
     ...(showAdmin ? [{ id: "admin" as HeaderTab, label: "ADMIN" }] : []),
   ];
 
@@ -39,17 +39,12 @@ export function AppHeader({ role, themeMode, onThemeChange, headerTab, adminSect
   return (
     <header className="h-14 border-b border-border bg-card flex items-center px-6 gap-4 sticky top-0 z-40">
       <div className="flex items-center gap-2.5 shrink-0">
-        {showBack && (
-          <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
-            <ArrowLeft size={15} className="text-muted-foreground" />
-          </button>
-        )}
         <CipherLogo />
       </div>
 
       <div className="flex-1 flex items-center justify-center overflow-visible min-w-0">
         <div className="inline-flex items-center rounded-xl bg-card p-1 shadow-sm border border-white/70 dark:border-border gap-1">
-          {tabs.map(tab => tab.id === "admin" ? (
+          {tabs.map(tab => tab.id === "admin" && showAdminDropdown ? (
             <div key={tab.id} className="relative" onMouseEnter={() => setShowAdminMenu(true)} onMouseLeave={() => setShowAdminMenu(false)}>
               <button
                 onClick={() => onHeaderTabChange(tab.id)}

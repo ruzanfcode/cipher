@@ -29,7 +29,7 @@ export function ConfidenceBadge({ reviews }: { reviews: number }) {
   }[state];
 
   return (
-    <span className={cx("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em]", styles.className)}>
+    <span className={cx("inline-flex max-w-full items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] sm:px-2.5 sm:text-[10px] sm:tracking-[0.12em]", styles.className)}>
       <span className={cx("h-1.5 w-1.5 rounded-full", styles.dot)} />
       {styles.label}{showCount ? ` (${reviewCountLabel})` : ""}
     </span>

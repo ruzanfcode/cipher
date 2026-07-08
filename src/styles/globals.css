@@ -3,6 +3,30 @@
 	scrollbar-color: #d9dee7 #f5f7fa;
 }
 
+button {
+	text-transform: uppercase;
+}
+
+.page-heading {
+	color: #111827;
+	font-family: 'Inter Tight', sans-serif;
+	font-size: 3rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1;
+	text-transform: capitalize;
+}
+
+.page-heading-sm {
+	color: #111827;
+	font-family: 'Inter Tight', sans-serif;
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1;
+	text-transform: capitalize;
+}
+
 *::-webkit-scrollbar {
 	width: 6px;
 	height: 6px;

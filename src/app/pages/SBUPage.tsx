@@ -221,7 +221,7 @@ export function SBUPage({ role, onSelectSBU }: { role: Role; onSelectSBU: (sbu: 
     return (
       <div>
         <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-7 pb-4 sm:pb-6 flex flex-wrap items-start sm:items-center justify-between gap-3">
-          <h1 className="font-black text-foreground uppercase tracking-tight text-[28px] sm:text-[36px] lg:text-[44px]">SBU Dashboard</h1>
+          <h1 className="page-heading">SBU Dashboard</h1>
           <Btn size="sm" onClick={() => setShowInvite(true)}><Plus size={12} /> Invite User</Btn>
         </div>
         <div className="mx-auto px-4 sm:px-6 lg:px-8 pb-12 space-y-6">
@@ -283,7 +283,7 @@ export function SBUPage({ role, onSelectSBU }: { role: Role; onSelectSBU: (sbu: 
             </div>
           </div>
         </div>
-        {showInvite && <InviteUserModal defaultSBU={dashboardSBU.name} onClose={() => setShowInvite(false)} />}
+        {showInvite && <InviteUserModal defaultSBU={dashboardSBU.name} allowRoleSelection={role !== "sbu_admin"} onClose={() => setShowInvite(false)} />}
         {confirmAction && confirmCopy && (
           <ConfirmDialog
             title={confirmCopy.title}
@@ -302,7 +302,7 @@ export function SBUPage({ role, onSelectSBU }: { role: Role; onSelectSBU: (sbu: 
     <div>
       <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-7 pb-4 sm:pb-6 flex flex-wrap items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="font-black text-foreground uppercase tracking-tight text-[28px] sm:text-[36px] lg:text-[44px]">SBU Management</h1>
+          <h1 className="page-heading-sm">SBU Management</h1>
           <p className="text-sm text-muted-foreground mt-1">{SBUS.length} strategic business units</p>
         </div>
         <Btn onClick={() => setShowCreate(true)}><Plus size={13} /> Create SBU</Btn>

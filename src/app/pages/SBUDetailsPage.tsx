@@ -42,6 +42,7 @@ function UserQuotaBar({ users, allowedUsers }: { users: number; allowedUsers: nu
 // ─── SBU Details Page ─────────────────────────────────────────────────────────
 export function SBUDetailsPage({ sbu }: { sbu: SBU }) {
   const dispatch = useAppDispatch();
+  const role = useAppSelector(state => state.auth.role);
   const [showInvite, setShowInvite] = useState(false);
   const [confirmAction, setConfirmAction] = useState<{ type: UserAction; user: SBUUser } | null>(null);
   const users = useAppSelector(state => state.users.users.filter(user => user.sbu === sbu.name));
@@ -99,7 +100,7 @@ export function SBUDetailsPage({ sbu }: { sbu: SBU }) {
     <div>
       <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-7 pb-4 sm:pb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-black text-foreground uppercase tracking-tight text-[28px] sm:text-[36px] lg:text-[44px]">{sbu.name}</h1>
+          <h1 className="page-heading-sm">{sbu.name}</h1>
           <p className="text-sm text-muted-foreground mt-1">Admin: <span className="text-foreground font-medium">{sbu.admin}</span></p>
         </div>
         <Badge label={sbu.status} variant={sbu.status === "Active" ? "positive" : "inactive"} />
@@ -167,7 +168,7 @@ export function SBUDetailsPage({ sbu }: { sbu: SBU }) {
           </table>
         </div>
       </div>
-      {showInvite && <InviteUserModal defaultSBU={sbu.name} onClose={() => setShowInvite(false)} />}
+      {showInvite && <InviteUserModal defaultSBU={sbu.name} allowRoleSelection={role !== "sbu_admin"} onClose={() => setShowInvite(false)} />}
       {confirmAction && confirmCopy && (
         <ConfirmDialog
           title={confirmCopy.title}
@@ -184,9 +185,9 @@ export function SBUDetailsPage({ sbu }: { sbu: SBU }) {
 }
 
 // ─── Route Wrapper ────────────────────────────────────────────────────────────
-export function SBUDetailsRoute() {
+export function SBUDetailsRoute({ allowAccess = true, allowedSBUId }: { allowAccess?: boolean; allowedSBUId?: number }) {
   const { sbuId } = useParams<{ sbuId: string }>();
   const sbu = SBUS.find(s => s.id === Number(sbuId));
-  if (!sbu) return <Navigate to="/sbu" replace />;
+  if (!allowAccess || !sbu || (allowedSBUId !== undefined && sbu.id !== allowedSBUId)) return <Navigate to="/not-found" replace />;
   return <SBUDetailsPage sbu={sbu} />;
 }

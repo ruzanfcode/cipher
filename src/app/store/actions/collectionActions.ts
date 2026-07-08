@@ -1,5 +1,5 @@
 // Thunk: add product with duplicate/capacity guard + toast
-import { addToCollection, createSavedCollection, deleteSavedCollection, removeFromCollection, setProductCollectionAssignments, shareSavedCollection } from "@/app/store/slices/collectionSlice";
+import { addToCollection, createSavedCollection, deleteSavedCollection, removeFromCollection, removeProductFromSavedCollection, setProductCollectionAssignments, shareSavedCollection, stopSharingSavedCollection } from "@/app/store/slices/collectionSlice";
 import { showToast } from "@/app/store/slices/uiSlice";
 import { saveCollection } from "@/app/store/slices/collectionSlice";
 import { USERS, USER_PROFILES } from "@/data/mockData";
@@ -180,6 +180,24 @@ export const shareSavedCollectionAction =
       sharedWith: recipient,
     }))));
     dispatch(showToast({ message: `Collection "${collection.name}" shared with ${sharedCollections.length} user${sharedCollections.length !== 1 ? "s" : ""}`, variant: "success" }));
+  };
+
+export const stopSharingSavedCollectionAction =
+  (collection: SavedCollection) => (dispatch: AppDispatch, getState: () => RootState) => {
+    const sharedCount = getState().collection.savedCollections.filter(item => item.sharedFromId === collection.id).length;
+    dispatch(stopSharingSavedCollection(collection.id));
+    dispatch(showToast({
+      message: sharedCount > 0
+        ? `Stopped sharing "${collection.name}" with ${sharedCount} user${sharedCount !== 1 ? "s" : ""}`
+        : `"${collection.name}" is not currently shared`,
+      variant: sharedCount > 0 ? "success" : "warning",
+    }));
+  };
+
+export const removeProductFromSavedCollectionAction =
+  (collection: SavedCollection, product: Product) => (dispatch: AppDispatch) => {
+    dispatch(removeProductFromSavedCollection({ collectionId: collection.id, productId: product.id }));
+    dispatch(showToast({ message: `Removed "${product.name}" from "${collection.name}"`, variant: "success" }));
   };
 
 export const deleteSavedCollectionAction =

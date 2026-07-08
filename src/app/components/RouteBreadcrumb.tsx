@@ -14,6 +14,7 @@ import { PRODUCTS, SBUS } from "@/data/mockData";
  *  /aggregate         → "Aggregate Analysis"
  *  /product/:id       → product name looked up from PRODUCTS
  *  /sbu/:id           → SBU name looked up from SBUS
+ *  /admin/user-management/:id → SBU name looked up from SBUS
  *  everything else    → no bar rendered
  */
 export function RouteBreadcrumb() {
@@ -38,6 +39,9 @@ function getLabel(path: string): string | null {
 
   const sbuMatch = path.match(/^\/sbu\/(\d+)/);
   if (sbuMatch) return SBUS.find(s => s.id === Number(sbuMatch[1]))?.name ?? null;
+
+  const adminSbuMatch = path.match(/^\/admin\/user-management\/(\d+)/);
+  if (adminSbuMatch) return SBUS.find(s => s.id === Number(adminSbuMatch[1]))?.name ?? null;
 
   return null;
 }

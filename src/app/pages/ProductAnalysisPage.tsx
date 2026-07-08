@@ -30,11 +30,11 @@ export function ProductAnalysisPage({ product }: { product: Product }) {
   };
 
   return (
-    <div>
-      <div className="px-4 sm:px-6 lg:px-8 pb-12 space-y-10">
+    <div className="w-full">
+      <div className="mx-auto w-full px-4 pt-[2.8125rem] pb-12 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 space-y-6 sm:space-y-8 lg:space-y-10">
 
         {/* ── Product Header ────────────────────────────────────────────── */}
-        <div className="bg-card/70 rounded-2xl border border-border shadow-xl shadow-slate-900/10 px-10 py-10 sm:px-12 sm:py-12 flex flex-col sm:flex-row items-center sm:items-center gap-8 sm:gap-10 min-h-[270px] transition-colors duration-200 hover:bg-[#e5e7eb] hover:border-[#d8dde5] dark:hover:bg-[#e7ebf0] dark:hover:border-[#d8dde5]">
+        <div className="bg-card/70 rounded-2xl border border-border shadow-xl shadow-slate-900/10 px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10 xl:px-12 xl:py-12 flex flex-col sm:flex-row items-center sm:items-center gap-6 sm:gap-8 lg:gap-10 min-h-[270px] transition-colors duration-200 hover:bg-[#e5e7eb] hover:border-[#d8dde5] dark:hover:bg-[#e7ebf0] dark:hover:border-[#d8dde5]">
           <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-3xl overflow-hidden bg-muted border border-white shadow-[0_24px_60px_rgba(15,23,42,0.18)] shrink-0">
             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
           </div>
@@ -44,7 +44,7 @@ export function ProductAnalysisPage({ product }: { product: Product }) {
               {product.brand}
             </p>
             <div className="flex items-center justify-center sm:justify-start gap-3 mb-5">
-              <h1 className="font-black text-foreground uppercase tracking-tight leading-none text-[30px] sm:text-[38px] lg:text-[36px]">
+              <h1 className="page-heading">
                 {product.name}
               </h1>
             </div>
@@ -72,7 +72,7 @@ export function ProductAnalysisPage({ product }: { product: Product }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
           {/* Overall Pulse */}
-          <div className="bg-card rounded-2xl border border-border shadow-sm p-[40px]">
+          <div className="bg-card rounded-2xl border border-border shadow-sm p-5 sm:p-8 lg:p-10">
             <div className="flex items-center gap-2 mb-5">
               <Clock size={12} className="text-primary shrink-0" />
               <span className="text-xs font-bold uppercase tracking-[0.15em] text-foreground">Overall Pulse</span>
@@ -82,7 +82,7 @@ export function ProductAnalysisPage({ product }: { product: Product }) {
           </div>
 
           {/* Attribute Sentiment */}
-          <div className="lg:col-span-2 bg-card rounded-2xl border border-border shadow-sm p-[40px]">
+          <div className="lg:col-span-2 bg-card rounded-2xl border border-border shadow-sm p-5 sm:p-8 lg:p-10">
             <div className="flex items-center gap-2 mb-5">
               <div className="w-0.5 h-4 rounded-full bg-primary shrink-0" />
               <span className="text-xs font-bold uppercase tracking-[0.15em] text-foreground">Attribute Sentiment</span>
@@ -127,7 +127,7 @@ export function ProductAnalysisPage({ product }: { product: Product }) {
         </div>
 
         {/* ── Reviews Feed ──────────────────────────────────────────────── */}
-        <div className="h-[880px] rounded-2xl border border-border bg-card p-[40px] shadow-sm">
+        <div className="h-[880px] rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8 lg:p-10">
           <ComparisonReviewFeed variant="wide" />
         </div>
         {reviewFilter && (

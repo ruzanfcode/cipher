@@ -80,7 +80,7 @@ export function FilteredReviewModal({
                       ))}
                     </div>
                   </div>
-                  <p className="text-sm font-semibold italic leading-[1.6] text-muted-foreground">"{review.text}"</p>
+                    <p className="font-sans font-medium text-[#4b5563]" style={{ fontSize: "0.87rem", lineHeight: 1.625, opacity: 0.8 }}>"{review.text}"</p>
                 </div>
               ))}
             </div>

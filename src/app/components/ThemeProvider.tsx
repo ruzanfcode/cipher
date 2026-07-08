@@ -11,6 +11,7 @@ import { logout }       from "@/app/store/actions/authActions";
 import { setThemeMode } from "@/app/store/actions/themeActions";
 import { clearToast }   from "@/app/store/actions/uiActions";
 import type { HeaderTab } from "@/app/types";
+import { SBUS, USER_PROFILES } from "@/data/mockData";
 
 /**
  * ThemeProvider — app shell and single source of truth for theming.
@@ -64,17 +65,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     path.startsWith("/admin/data-management") ? "data-management" as const :
     path.startsWith("/admin/user-management") || path.startsWith("/sbu") ? "user-management" as const : null;
 
-  const isSubPage =
-    path.startsWith("/product/") || path.startsWith("/sbu/") || path.match(/^\/admin\/user-management\/\d+/) ||
-    path === "/comparison"       || path === "/aggregate";
-
   const showAIChat =
     path.startsWith("/product/") || path === "/comparison" || path === "/aggregate";
+  const adminSBU = role ? SBUS.find(sbu => sbu.name === USER_PROFILES[role].sbu) : undefined;
+  const adminTarget = role === "sbu_admin" && adminSBU ? `/admin/user-management/${adminSBU.id}` : "/admin/user-management";
 
   // ── Breadcrumb label derived from current route ────────────────────────────
   // Handled by <RouteBreadcrumb /> — see src/app/components/RouteBreadcrumb.tsx
 
   const handleLogout = () => { dispatch(logout()); navigate("/login"); };
+  const handleHeaderTabChange = (tab: HeaderTab) => {
+    if (tab === "admin") {
+      navigate(adminTarget);
+      return;
+    }
+    if (tab === "collections") {
+      navigate("/collections", { state: { showAllCollections: Date.now() } });
+      return;
+    }
+    navigate(`/${tab}`);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
@@ -85,11 +95,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           onThemeChange={t => dispatch(setThemeMode(t))}
           headerTab={headerTab}
           adminSection={adminSection}
-          onHeaderTabChange={tab => navigate(tab === "admin" ? "/admin/user-management" : `/${tab}`)}
+          onHeaderTabChange={handleHeaderTabChange}
           onAdminSectionChange={section => navigate(`/admin/${section}`)}
           tempCollectionCount={tempCollectionCount}
-          showBack={isSubPage}
-          onBack={() => navigate(-1)}
           onLogout={handleLogout}
         />
       )}

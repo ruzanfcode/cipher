@@ -19,14 +19,14 @@ function SideBySideColumn({ product, isPinned, onPin, onAttributeSegmentClick }:
   onAttributeSegmentClick: (filter: { product: Product; attribute: string; rangeLabel: string; score: number }) => void;
 }) {
   return (
-    <div className={cx("w-[clamp(320px,calc((100vw-8rem)/4),520px)] shrink-0 rounded-3xl overflow-hidden flex flex-col transition-colors duration-150 border",
+    <div className={cx("w-[clamp(360px,calc((100vw-10rem)/3),480px)] shrink-0 rounded-3xl overflow-hidden flex flex-col transition-colors duration-150 border",
       isPinned
         ? "relative z-10 bg-white dark:bg-card border-gray-200 dark:border-border shadow-[0_22px_70px_rgba(15,23,42,0.22)] dark:shadow-[0_22px_70px_rgba(0,0,0,0.34)]"
         : "bg-[#FFFFFF] dark:bg-muted border-gray-200 dark:border-border hover:bg-[#e5e7eb] dark:hover:bg-accent"
     )}>
-      <div className="p-10 h-[176px] border-b border-gray-100 dark:border-border shrink-0">
+      <div className="h-[184px] border-b border-gray-100 p-7 dark:border-border shrink-0">
         <div className="flex items-start gap-3">
-          <div className="w-[68px] h-[68px] rounded-xl overflow-hidden bg-white shrink-0 border border-gray-200 shadow-sm">
+          <div className="h-[60px] w-[60px] rounded-xl overflow-hidden bg-white shrink-0 border border-gray-200 shadow-sm">
             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0 pt-0.5">
@@ -46,10 +46,10 @@ function SideBySideColumn({ product, isPinned, onPin, onAttributeSegmentClick }:
         </div>
       </div>
       <div className="flex-1 flex flex-col min-h-0">
-        <section className="h-[320px] px-10 pt-4 pb-3 overflow-hidden shrink-0">
+        <section className="h-[320px] px-7 pt-4 pb-3 overflow-hidden shrink-0">
           <SentimentPie data={product.sentiment} />
         </section>
-        <section className="h-[740px] px-10 pt-10 pb-10 overflow-hidden border-b border-gray-100 dark:border-border shrink-0">
+        <section className="h-[740px] px-7 pt-8 pb-8 overflow-hidden border-b border-gray-100 dark:border-border shrink-0">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-0.5 h-3.5 rounded-full bg-primary shrink-0" />
             <span className="font-bold uppercase tracking-[0.18em] text-muted-foreground" style={{ fontSize: 10 }}>Attribute Analysis</span>
@@ -67,7 +67,7 @@ function SideBySideColumn({ product, isPinned, onPin, onAttributeSegmentClick }:
             ))}
           </div>
         </section>
-        <section className="h-[880px] px-10 pt-10 pb-10 overflow-hidden shrink-0">
+        <section className="h-[880px] px-7 pt-8 pb-8 overflow-hidden shrink-0">
           <ComparisonReviewFeed />
         </section>
       </div>
@@ -112,7 +112,7 @@ export function ComparisonPage({ products, onAggregate }: { products: Product[];
     <div>
       <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-7 pb-4 sm:pb-6">        
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 sm:mb-7">
-          <h1 className="font-black text-foreground uppercase tracking-tight text-[28px] sm:text-[36px] lg:text-[44px]">Product Comparison</h1>
+          <h1 className="page-heading-sm">Product Comparison</h1>
           <div className="flex flex-wrap items-center justify-end gap-3">
             <div className="flex items-center gap-0.5 bg-card border border-border rounded-xl p-1 shadow-sm">
             {([
@@ -178,7 +178,7 @@ export function ComparisonPage({ products, onAggregate }: { products: Product[];
         </div>
       ) : viewMode === "side-by-side" ? (
         <div className="px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="flex gap-8 items-start bg-transparent">
+          <div className="flex gap-6 items-start bg-transparent">
             {pinnedProduct && (
               <SideBySideColumn
                 product={pinnedProduct}
@@ -188,7 +188,7 @@ export function ComparisonPage({ products, onAggregate }: { products: Product[];
               />
             )}
             <div ref={scrollRef} className="flex-1 min-w-0 overflow-x-auto pb-4 scrollbar-none bg-transparent">
-              <div className="flex gap-8">
+              <div className="flex gap-6">
                 {scrollingProducts.map(p => (
                   <SideBySideColumn
                     key={p.id}

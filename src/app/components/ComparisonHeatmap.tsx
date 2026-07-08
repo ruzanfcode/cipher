@@ -5,12 +5,12 @@ import { cx } from "@/app/lib/utils";
 import type { Product } from "@/app/types";
 
 export const SENTIMENT_BUCKETS = [
-  { label: "0-15 Extremely Negative", min: 0, max: 15, color: "#991b1b" },
-  { label: "15-30 Negative", min: 15, max: 30, color: "#dc2626" },
-  { label: "30-45 Neutral", min: 30, max: 45, color: "#f59e0b" },
-  { label: "45-60 Fairly Positive", min: 45, max: 60, color: "#bef264" },
-  { label: "60-75 Positive", min: 60, max: 75, color: "#22c55e" },
-  { label: "75-100 Extremely Positive", min: 75, max: 100, color: "#15803d" },
+  { label: "Extremely Negative", min: 0, max: 15, color: "#991b1b" },
+  { label: "Negative", min: 15, max: 30, color: "#dc2626" },
+  { label: "Neutral", min: 30, max: 45, color: "#f59e0b" },
+  { label: "Fairly Positive", min: 45, max: 60, color: "#bef264" },
+  { label: "Positive", min: 60, max: 75, color: "#22c55e" },
+  { label: "Extremely Positive", min: 75, max: 100, color: "#15803d" },
 ];
 
 export function sentimentBucketForValue(value: number) {
@@ -115,7 +115,6 @@ export function ComparisonHeatmap({ products }: { products: Product[] }) {
               <div key={`overall-${product.id}`} className="flex h-[140px] flex-col items-center justify-center border-b border-slate-100 px-12">
                 <MatrixSentimentBar positive={product.sentiment.positive} neutral={product.sentiment.neutral} negative={product.sentiment.negative} />
                 <div className="mt-5 flex items-center gap-4 text-[13px] font-black uppercase tracking-[0.12em]">
-                  <span className="text-[#07111f]">{dominant.value}%</span>
                   <span className={dominant.label === "Negative" ? "text-[#ff4d4d]" : dominant.label === "Mixed" ? "text-[#f7a51b]" : "text-[#18bf8f]"}>{dominant.label}</span>
                 </div>
               </div>
@@ -126,7 +125,6 @@ export function ComparisonHeatmap({ products }: { products: Product[] }) {
           {products.map(product => (
             <div key={`volume-${product.id}`} className="flex h-[140px] flex-col items-center justify-center border-b border-slate-100 px-12">
               <MatrixConfidenceBadge reviews={product.reviews} />
-              <div className="mt-4 text-[12px] font-black uppercase tracking-[0.16em] text-slate-400">{product.reviews.toLocaleString()} reviews</div>
             </div>
           ))}
 
@@ -143,7 +141,6 @@ export function ComparisonHeatmap({ products }: { products: Product[] }) {
                       <>
                         <MatrixSentimentBar positive={sentiment.positive} neutral={sentiment.neutral} negative={sentiment.negative} />
                         <div className="mt-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.12em]">
-                          <span className={dominant.label === "Negative" ? "text-[#ff4d4d]" : dominant.label === "Mixed" ? "text-[#f7a51b]" : "text-[#18bf8f]"}>{dominant.value}%</span>
                           <span className="text-slate-400">{dominant.label}</span>
                         </div>
                       </>

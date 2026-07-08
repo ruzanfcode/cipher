@@ -7,6 +7,12 @@ import { useAppDispatch } from "@/app/store/hooks";
 import { showToast } from "@/app/store/actions/uiActions";
 import { addUser } from "@/app/store/actions/userActions";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidEmail(email: string) {
+  return EMAIL_PATTERN.test(email.trim());
+}
+
 function getInviteName(email: string) {
   const localPart = email.split("@")[0] || "Invited User";
   return localPart
@@ -16,22 +22,31 @@ function getInviteName(email: string) {
     .join(" ") || "Invited User";
 }
 
-export function InviteUserModal({ onClose, defaultSBU }: { onClose: () => void; defaultSBU?: string }) {
+export function InviteUserModal({ onClose, defaultSBU, allowRoleSelection = true }: { onClose: () => void; defaultSBU?: string; allowRoleSelection?: boolean }) {
   const dispatch = useAppDispatch();
   const [email, setEmail]   = useState("");
   const [role, setRole]     = useState("SBU User");
   const sbu = defaultSBU ?? SBUS[0]?.name ?? "";
   const [sent, setSent]     = useState(false);
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const handleInvite = () => {
-    if (!email.trim()) return;
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setEmailError("Email address is required.");
+      return;
+    }
+    if (!isValidEmail(trimmedEmail)) {
+      setEmailError("Enter a valid email address.");
+      return;
+    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       setSent(true);
-      dispatch(addUser({ name: getInviteName(email.trim()), email: email.trim(), role: role as "SBU Admin" | "SBU User", sbu }));
-      dispatch(showToast({ message: `User ${email.trim()} invited successfully`, variant: "success" }));
+      dispatch(addUser({ name: getInviteName(trimmedEmail), email: trimmedEmail, role: role as "SBU Admin" | "SBU User", sbu }));
+      dispatch(showToast({ message: `User ${trimmedEmail} invited successfully`, variant: "success" }));
       setTimeout(onClose, 2200);
     }, 900);
   };
@@ -64,19 +79,23 @@ export function InviteUserModal({ onClose, defaultSBU }: { onClose: () => void; 
               <label className="text-sm font-medium text-foreground block mb-1.5">Email Address <span className="text-red-500">*</span></label>
               <input
                 autoFocus type="email" value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => { setEmail(e.target.value); if (emailError) setEmailError(""); }}
                 onKeyDown={e => e.key === "Enter" && handleInvite()}
                 placeholder="colleague@company.com"
-                className="w-full px-3.5 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                aria-invalid={emailError ? "true" : "false"}
+                className={cx("w-full px-3.5 py-2.5 rounded-lg bg-background border text-foreground text-sm focus:outline-none focus:ring-2 transition-all", emailError ? "border-red-400 focus:border-red-400 focus:ring-red-500/10" : "border-border focus:border-primary focus:ring-primary/10")}
               />
+              {emailError && <p className="mt-1.5 text-xs font-medium text-red-500">{emailError}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1.5">Role</label>
-              <select value={role} onChange={e => setRole(e.target.value)} className="w-full px-3.5 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:border-primary transition-all">
-                <option>SBU User</option>
-                <option>SBU Admin</option>
-              </select>
-            </div>
+            {allowRoleSelection && (
+              <div>
+                <label className="text-sm font-medium text-foreground block mb-1.5">Role</label>
+                <select value={role} onChange={e => setRole(e.target.value)} className="w-full px-3.5 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:border-primary transition-all">
+                  <option>SBU User</option>
+                  <option>SBU Admin</option>
+                </select>
+              </div>
+            )}
             <div className="p-3 rounded-xl bg-muted/50 border border-border text-xs text-muted-foreground">
               Invitation expires in <span className="font-medium text-foreground">7 days</span> · User must sign in via Microsoft SSO
             </div>

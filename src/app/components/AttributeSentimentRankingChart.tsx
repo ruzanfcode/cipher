@@ -21,6 +21,7 @@ export function AttributeSentimentRankingChart({
   negativeSort,
   onTogglePositiveSort,
   onToggleNegativeSort,
+  onSentimentClick,
 }: {
   attributeName: string;
   discussedPercent: number;
@@ -30,6 +31,7 @@ export function AttributeSentimentRankingChart({
   negativeSort: AttributeSortDirection;
   onTogglePositiveSort: () => void;
   onToggleNegativeSort: () => void;
+  onSentimentClick?: (item: { product: Product; attribute: string; rangeLabel: "Positive" | "Negative"; score: number }) => void;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-background p-5">
@@ -47,7 +49,7 @@ export function AttributeSentimentRankingChart({
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-5 2xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-4">
           <div className="mb-4 flex items-center justify-between gap-3">
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-600">Positive</p>
@@ -61,7 +63,12 @@ export function AttributeSentimentRankingChart({
           </div>
           <div className="space-y-3">
             {positiveRows.map(({ product, sentiment }) => (
-              <div key={`${attributeName}-positive-${product.id}`}>
+              <button
+                key={`${attributeName}-positive-${product.id}`}
+                type="button"
+                onClick={() => onSentimentClick?.({ product, attribute: attributeName, rangeLabel: "Positive", score: sentiment.positive })}
+                className="block w-full rounded-xl p-1.5 text-left transition-all hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 dark:hover:bg-emerald-950/20"
+              >
                 <div className="mb-1.5 flex items-center justify-between gap-3">
                   <p className="truncate text-xs font-bold text-foreground">{product.name}</p>
                   <span className="text-xs font-black text-emerald-600">{sentiment.positive}%</span>
@@ -69,7 +76,7 @@ export function AttributeSentimentRankingChart({
                 <div className="h-2 overflow-hidden rounded-full bg-emerald-100">
                   <div className="h-full rounded-full bg-emerald-500" style={{ width: `${sentiment.positive}%` }} />
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -86,7 +93,12 @@ export function AttributeSentimentRankingChart({
           </div>
           <div className="space-y-3">
             {negativeRows.map(({ product, sentiment }) => (
-              <div key={`${attributeName}-negative-${product.id}`}>
+              <button
+                key={`${attributeName}-negative-${product.id}`}
+                type="button"
+                onClick={() => onSentimentClick?.({ product, attribute: attributeName, rangeLabel: "Negative", score: sentiment.negative })}
+                className="block w-full rounded-xl p-1.5 text-left transition-all hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500/25 dark:hover:bg-red-950/20"
+              >
                 <div className="mb-1.5 flex items-center justify-between gap-3">
                   <p className="truncate text-xs font-bold text-foreground">{product.name}</p>
                   <span className="text-xs font-black text-red-500">{sentiment.negative}%</span>
@@ -94,7 +106,7 @@ export function AttributeSentimentRankingChart({
                 <div className="h-2 overflow-hidden rounded-full bg-red-100">
                   <div className="h-full rounded-full bg-red-500" style={{ width: `${sentiment.negative}%` }} />
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
