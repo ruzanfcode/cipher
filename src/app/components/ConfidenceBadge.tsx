@@ -2,7 +2,9 @@ import React from "react";
 import { cx } from "@/app/lib/utils";
 
 export function ConfidenceBadge({ reviews }: { reviews: number }) {
-  const state = reviews <= 0 ? "none" : reviews >= 200 ? "high" : reviews >= 100 ? "medium" : "low";
+  const state = reviews <= 0 ? "none" : reviews >= 50 ? "high" : reviews >= 15 ? "medium" : "low";
+  const reviewCountLabel = reviews > 1000 ? "1000+" : reviews > 500 ? "500+" : reviews > 100 ? "100+" : reviews > 50 ? "50+" : reviews.toString();
+  const showCount = state === "high" || state === "medium";
   const styles = {
     none: {
       label: "NO REVIEWS",
@@ -29,7 +31,7 @@ export function ConfidenceBadge({ reviews }: { reviews: number }) {
   return (
     <span className={cx("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em]", styles.className)}>
       <span className={cx("h-1.5 w-1.5 rounded-full", styles.dot)} />
-      {styles.label}
+      {styles.label}{showCount ? ` (${reviewCountLabel})` : ""}
     </span>
   );
 }

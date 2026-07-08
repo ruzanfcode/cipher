@@ -1,56 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
+import { Heart, MessageCircle } from "lucide-react";
 import { ATTRIBUTES } from "@/data/mockData";
 import { cx } from "@/app/lib/utils";
 import type { Product } from "@/app/types";
 
-type HeatmapCell = {
-  columnId: string;
-  label: string;
-  value: number;
-  isAverage?: boolean;
-};
-
 export const SENTIMENT_BUCKETS = [
-  { label: "0-10", color: "#b00026" },
-  { label: "10-20", color: "#d73027" },
-  { label: "20-30", color: "#f46d43" },
-  { label: "30-40", color: "#fdae61" },
-  { label: "40-50", color: "#fee08b" },
-  { label: "50-60", color: "#e6f598" },
-  { label: "60-70", color: "#abd96b" },
-  { label: "70-80", color: "#66bd63" },
-  { label: "80-90", color: "#1a9850" },
-  { label: "90-100", color: "#006837" },
+  { label: "0-15 Extremely Negative", min: 0, max: 15, color: "#991b1b" },
+  { label: "15-30 Negative", min: 15, max: 30, color: "#dc2626" },
+  { label: "30-45 Neutral", min: 30, max: 45, color: "#f59e0b" },
+  { label: "45-60 Fairly Positive", min: 45, max: 60, color: "#bef264" },
+  { label: "60-75 Positive", min: 60, max: 75, color: "#22c55e" },
+  { label: "75-100 Extremely Positive", min: 75, max: 100, color: "#15803d" },
 ];
 
-const HEATMAP_ATTRIBUTES = [
-  "Fit",
-  "Comfort",
-  "Material",
-  "Aesthetic",
-  "Price",
-  "Performance",
-  "Functionality",
-  "Workmanship",
-  "Quality",
-  "Durability",
-];
-
-function sentimentBucket(value: number) {
-  const bucketIndex = Math.min(9, Math.max(0, Math.floor(value / 10)));
-  return SENTIMENT_BUCKETS[bucketIndex];
-}
-
-function sentimentColor(value: number) {
-  return sentimentBucket(value).color;
-}
-
-function sentimentGradient() {
-  return `linear-gradient(to top, ${SENTIMENT_BUCKETS.map((bucket, index) => `${bucket.color} ${index * 10}%`).join(", ")}, ${SENTIMENT_BUCKETS[SENTIMENT_BUCKETS.length - 1].color} 100%)`;
-}
-
-function textColor(value: number) {
-  return value <= 35 || value >= 80 ? "text-white" : "text-slate-950";
+export function sentimentBucketForValue(value: number) {
+  return SENTIMENT_BUCKETS.find(bucket => value >= bucket.min && value < bucket.max) ?? SENTIMENT_BUCKETS[SENTIMENT_BUCKETS.length - 1];
 }
 
 function attributeSeed(attribute: string) {
@@ -71,94 +35,127 @@ function productAttributeScore(product: Product, attribute: string, index: numbe
 }
 
 function productLabel(product: Product) {
-  const words = product.name.split(" ").filter(Boolean);
-  return words.slice(0, 2).join(" ").toUpperCase();
+  return product.name.toUpperCase();
+}
+
+function sentimentLabel(data: Product["sentiment"]) {
+  const values = [
+    { label: "Positive", value: data.positive },
+    { label: "Mixed", value: data.neutral },
+    { label: "Negative", value: data.negative },
+  ];
+  return values.sort((current, next) => next.value - current.value)[0];
+}
+
+function attributeSentiment(product: Product, attribute: string, index: number) {
+  const positive = productAttributeScore(product, attribute, index);
+  const negative = Math.max(0, Math.min(100, Math.round(product.sentiment.negative * 0.58 + ((product.id + index * 17) % 18))));
+  const neutral = Math.max(0, 100 - positive - negative);
+  return { positive, neutral, negative };
+}
+
+function attributeMentioned(product: Product, index: number) {
+  return (product.id * 5 + index * 3) % 11 !== 0;
+}
+
+function MatrixSentimentBar({ positive, neutral, negative }: { positive: number; neutral: number; negative: number }) {
+  return (
+    <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-slate-200/70 shadow-inner shadow-white/60">
+      <div className="bg-[#35c9a3]" style={{ width: `${positive}%` }} />
+      <div className="bg-[#f5bd55]" style={{ width: `${neutral}%` }} />
+      <div className="bg-[#f87171]" style={{ width: `${negative}%` }} />
+    </div>
+  );
+}
+
+function MatrixConfidenceBadge({ reviews }: { reviews: number }) {
+  const label = reviews >= 2500 ? "High Confidence" : reviews >= 1500 ? "Medium Confidence" : "Low Confidence";
+  const className = reviews >= 2500
+    ? "bg-emerald-100 text-emerald-700"
+    : reviews >= 1500
+      ? "bg-amber-100 text-amber-700"
+      : "bg-[#7b4a30] text-[#ffab2e]";
+
+  return <span className={cx("inline-flex rounded-md px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em]", className)}>{label}</span>;
+}
+
+function MetricLabel({ label, Icon }: { label: string; Icon?: React.ComponentType<{ size?: number; className?: string }> }) {
+  return (
+    <div className="flex h-full items-center gap-4 border-b border-slate-100 px-8 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600">
+      {Icon && <Icon size={15} className="text-slate-700" />}
+      {label}
+    </div>
+  );
 }
 
 export function ComparisonHeatmap({ products }: { products: Product[] }) {
-  const [showValues, setShowValues] = useState(true);
-  const visibleProducts = products.slice(0, 6);
-
-  const rows = HEATMAP_ATTRIBUTES.map((attribute, attributeIndex) => {
-    const productCells: HeatmapCell[] = visibleProducts.map(product => ({
-      columnId: String(product.id),
-      label: productLabel(product),
-      value: productAttributeScore(product, attribute, attributeIndex),
-    }));
-    const average = Math.round(productCells.reduce((total, cell) => total + cell.value, 0) / Math.max(1, productCells.length));
-    const cells = [{ columnId: "collection-average", label: "Collection Avg", value: average, isAverage: true }, ...productCells];
-    const values = cells.map(cell => cell.value);
-    return {
-      attribute,
-      cells,
-      average,
-      best: Math.max(...values),
-      worst: Math.min(...values),
-    };
-  });
-
-  const columns = ["Collection Avg", ...visibleProducts.map(productLabel)];
-
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-900/10 dark:border-border dark:bg-card">
-      <div className="overflow-x-auto pb-3 [scrollbar-color:#e5e7eb_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200">
-        <div className="grid w-max gap-0.5" style={{ gridTemplateColumns: `72px repeat(${columns.length}, 40px) 28px` }}>
-          <div />
-          {columns.map(column => (
-            <div key={column} className="flex h-6 items-end justify-center px-0.5 text-center text-[7px] font-black uppercase leading-tight text-slate-950 dark:text-foreground">
-              {column}
+    <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-[#f4f5f7] shadow-xl shadow-slate-900/10 dark:border-border dark:bg-card">
+      <div className="overflow-x-auto [scrollbar-color:#d6dbe3_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300">
+        <div className="grid w-max min-w-full" style={{ gridTemplateColumns: `240px repeat(${products.length}, minmax(300px, 1fr))` }}>
+          <div className="sticky left-0 z-20 flex h-[220px] items-center border-b border-slate-100 bg-white px-8 text-[11px] font-black uppercase tracking-[0.42em] text-slate-400 dark:bg-card">
+            Metrics Matrix
+          </div>
+
+          {products.map(product => (
+            <div key={product.id} className="flex h-[220px] flex-col items-center justify-center border-b border-slate-100 px-10 text-center">
+              <div className="mb-7 h-[92px] w-[92px] overflow-hidden rounded-[28px] border border-white bg-white shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
+                <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+              </div>
+              <div className="max-w-[240px] text-[16px] font-black uppercase leading-tight tracking-[0.05em] text-[#07111f]">
+                {productLabel(product)}
+              </div>
             </div>
           ))}
-          <div />
 
-          {rows.map(row => (
-            <React.Fragment key={row.attribute}>
-              <div className="flex h-7 items-center justify-end pr-1 text-[8px] font-black uppercase text-slate-950 dark:text-foreground">
-                {row.attribute}
+          <div className="sticky left-0 z-10 h-[140px] bg-white dark:bg-card"><MetricLabel label="Overall Sentiment" Icon={Heart} /></div>
+          {products.map(product => {
+            const dominant = sentimentLabel(product.sentiment);
+            return (
+              <div key={`overall-${product.id}`} className="flex h-[140px] flex-col items-center justify-center border-b border-slate-100 px-12">
+                <MatrixSentimentBar positive={product.sentiment.positive} neutral={product.sentiment.neutral} negative={product.sentiment.negative} />
+                <div className="mt-5 flex items-center gap-4 text-[13px] font-black uppercase tracking-[0.12em]">
+                  <span className="text-[#07111f]">{dominant.value}%</span>
+                  <span className={dominant.label === "Negative" ? "text-[#ff4d4d]" : dominant.label === "Mixed" ? "text-[#f7a51b]" : "text-[#18bf8f]"}>{dominant.label}</span>
+                </div>
               </div>
-              {row.cells.map(cell => {
-                const belowAverage = !cell.isAverage && cell.value < row.average;
-                const isBest = cell.value === row.best;
-                const isWorst = cell.value === row.worst;
+            );
+          })}
+
+          <div className="sticky left-0 z-10 h-[140px] bg-white dark:bg-card"><MetricLabel label="Review Volume" Icon={MessageCircle} /></div>
+          {products.map(product => (
+            <div key={`volume-${product.id}`} className="flex h-[140px] flex-col items-center justify-center border-b border-slate-100 px-12">
+              <MatrixConfidenceBadge reviews={product.reviews} />
+              <div className="mt-4 text-[12px] font-black uppercase tracking-[0.16em] text-slate-400">{product.reviews.toLocaleString()} reviews</div>
+            </div>
+          ))}
+
+          {ATTRIBUTES.map((attribute, attributeIndex) => (
+            <React.Fragment key={`${attribute.name}-${attributeIndex}`}>
+              <div className="sticky left-0 z-10 h-[140px] bg-white dark:bg-card"><MetricLabel label={attribute.name} /></div>
+              {products.map(product => {
+                const mentioned = attributeMentioned(product, attributeIndex);
+                const sentiment = attributeSentiment(product, attribute.name, attributeIndex);
+                const dominant = sentimentLabel(sentiment);
                 return (
-                  <div
-                    key={`${row.attribute}-${cell.columnId}`}
-                    className={cx(
-                      "mx-auto flex h-4 w-8 items-center justify-center rounded border px-0.5 text-[7px] font-black transition-all",
-                      textColor(cell.value),
-                      isBest && "border-emerald-200 shadow-[0_0_8px_rgba(16,185,129,0.45)]",
-                      isWorst && "border-red-500 border-dashed shadow-[0_0_12px_rgba(239,68,68,0.4)]",
-                      !isBest && !isWorst && "border-white/70"
-                    )}
-                    style={{ backgroundColor: sentimentColor(cell.value) }}
-                    title={`${cell.label} ${row.attribute}: ${cell.value}% positive sentiment (${sentimentBucket(cell.value).label})`}
-                  >
-                    {showValues && (
-                      <span>
-                        {cell.value}%{belowAverage && <span className="ml-1 text-red-700">↓</span>}
-                      </span>
+                  <div key={`${attribute.name}-${attributeIndex}-${product.id}`} className="flex h-[140px] flex-col items-center justify-center border-b border-slate-100 px-12">
+                    {mentioned ? (
+                      <>
+                        <MatrixSentimentBar positive={sentiment.positive} neutral={sentiment.neutral} negative={sentiment.negative} />
+                        <div className="mt-5 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.12em]">
+                          <span className={dominant.label === "Negative" ? "text-[#ff4d4d]" : dominant.label === "Mixed" ? "text-[#f7a51b]" : "text-[#18bf8f]"}>{dominant.value}%</span>
+                          <span className="text-slate-400">{dominant.label}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Not Mentioned</span>
                     )}
                   </div>
                 );
               })}
-              {row.attribute === rows[0].attribute && (
-                <div className="row-span-10 ml-1.5 flex flex-col items-center justify-center gap-2">
-                  <div className="h-[200px] w-2 rounded-sm" style={{ background: sentimentGradient() }} />
-                  <div className="-rotate-90 whitespace-nowrap text-[8px] font-bold text-slate-700 dark:text-muted-foreground">% Positive Sentiment</div>
-                </div>
-              )}
             </React.Fragment>
           ))}
         </div>
-      </div>
-
-      <div className="mt-5 flex flex-wrap items-center gap-1">
-        {SENTIMENT_BUCKETS.map(bucket => (
-          <div key={bucket.label} className="flex items-center gap-1.5 text-[9px] font-bold text-slate-600 dark:text-muted-foreground">
-            <span className="h-3 w-5 rounded-sm border border-white/70" style={{ backgroundColor: bucket.color }} />
-            {bucket.label}
-          </div>
-        ))}
       </div>
     </div>
   );

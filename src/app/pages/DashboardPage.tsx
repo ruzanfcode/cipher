@@ -627,12 +627,11 @@ export function DashboardPage() {
   return (
     <div>
       <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7 pb-5 sm:pb-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="font-black text-foreground uppercase tracking-tight text-[28px] sm:text-[36px] lg:text-[44px]">Admin Console</h1>
-        <AdminToggle view={view} onChange={setView} />
+        <h1 className="font-black text-foreground uppercase tracking-tight text-[28px] sm:text-[36px] lg:text-[44px]">Usage Analytics</h1>
       </div>
 
       <div className="mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {view === "access" ? <UserAccessView role={role} /> : <AnalyticsView role={role} />}
+        <AnalyticsView role={role} />
       </div>
     </div>
   );

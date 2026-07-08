@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertTriangle, ArrowDown, ArrowUp, Sigma } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { ATTRIBUTES } from "@/data/mockData";
 import { cx } from "@/app/lib/utils";
 import type { Product } from "@/app/types";
@@ -18,7 +18,6 @@ export function OverallSentimentInsight({ products }: { products: Product[] }) {
   const overallPositive = average(products.map(product => product.sentiment.positive));
   const overallNeutral = average(products.map(product => product.sentiment.neutral));
   const overallNegative = average(products.map(product => product.sentiment.negative));
-  const netSentiment = overallPositive - overallNegative;
   const dominantSentiment = [
     { label: "Positive", value: overallPositive },
     { label: "Neutral", value: overallNeutral },
@@ -31,7 +30,6 @@ export function OverallSentimentInsight({ products }: { products: Product[] }) {
   const lowContributor = products.reduce((worst, product) => product.sentiment.positive < worst.sentiment.positive ? product : worst, products[0]);
   const mostSatisfied = ATTRIBUTES.reduce((best, attr) => attr.positive > best.positive ? attr : best, ATTRIBUTES[0]);
   const leastSatisfied = ATTRIBUTES.reduce((worst, attr) => attr.positive < worst.positive ? attr : worst, ATTRIBUTES[0]);
-  const lowConfidenceAttribute = ATTRIBUTES.find(attr => attr.usage < 0.1);
 
   return (
     <div>
@@ -45,7 +43,7 @@ export function OverallSentimentInsight({ products }: { products: Product[] }) {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-border dark:bg-background">
           <div className="mb-3 flex items-center justify-between gap-2">
             <span className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">High Contributor</span>
@@ -63,15 +61,6 @@ export function OverallSentimentInsight({ products }: { products: Product[] }) {
           <p className="text-sm font-black text-foreground">{lowContributor.name}</p>
           <p className="mt-1 text-xs font-semibold text-red-500">{lowContributor.sentiment.positive}% positive</p>
         </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-border dark:bg-background">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Net Sentiment</span>
-            <Sigma size={14} className="text-primary" />
-          </div>
-          <p className="text-sm font-black text-foreground">+{netSentiment} pts</p>
-          <p className="mt-1 text-xs font-semibold text-muted-foreground">{overallPositive}% positive - {overallNegative}% negative</p>
-        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -85,18 +74,6 @@ export function OverallSentimentInsight({ products }: { products: Product[] }) {
           <p className="mt-2 text-sm font-black text-foreground">{leastSatisfied.name}</p>
           <p className="mt-1 text-xs font-semibold text-red-500">{leastSatisfied.positive}% positive, {leastSatisfied.negative}% negative</p>
         </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-400 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-amber-500">
-          <AlertTriangle size={11} /> {lowConfidenceAttribute ? `Low Confidence: ${lowConfidenceAttribute.name}` : "No Low Confidence Attributes"} (&lt;10% Discussed)
-        </span>
-      </div>
-
-      <div className="mt-4 grid grid-cols-1 gap-2 text-[10px] font-semibold text-muted-foreground md:grid-cols-3">
-        <div className="rounded-xl bg-slate-50 p-3 dark:bg-background">Overall = sum(product positive %) / product count</div>
-        <div className="rounded-xl bg-slate-50 p-3 dark:bg-background">Net = overall positive % - overall negative %</div>
-        <div className="rounded-xl bg-slate-50 p-3 dark:bg-background">Confidence = strongest sentiment share across positive, neutral, negative</div>
       </div>
     </div>
   );

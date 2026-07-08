@@ -51,7 +51,7 @@ export default function App() {
         onToggleBrand={id => dispatch(toggleBrand(id))}
         onClearBrands={() => dispatch(clearBrands())}
         onSearchModeChange={m => dispatch(setSearchMode(m))}
-        onSelectSBU={id => navigate(`/sbu/${id}`)}
+        onSelectSBU={id => navigate(`/admin/user-management/${id}`)}
         onLogin={handleLogin}
       />
     </ThemeProvider>

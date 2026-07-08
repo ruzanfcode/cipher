@@ -1,91 +1,33 @@
 import React, { useState } from "react";
 import { Navigate, useParams } from "react-router";
-import { Star, Search, ExternalLink, AlertTriangle, Clock, Camera, Plus, Share2, Check } from "lucide-react";
-import { PRODUCTS, ATTRIBUTES, ATTRIBUTE_NAMES, REVIEWS } from "@/data/mockData";
+import { ExternalLink, AlertTriangle, Clock, Copy } from "lucide-react";
+import { PRODUCTS, ATTRIBUTES } from "@/data/mockData";
 import { ConfidenceBadge } from "@/app/components/ConfidenceBadge";
 import { SentimentPie } from "@/app/components/SentimentPie";
 import { SentimentBar } from "@/app/components/SentimentBar";
-import { cx } from "@/app/lib/utils";
-import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { ComparisonReviewFeed } from "../components/ComparisonReviewFeed";
+import { FilteredReviewModal } from "../components/FilteredReviewModal";
+import { useAppDispatch } from "@/app/store/hooks";
 import { showToast } from "@/app/store/actions/uiActions";
 import type { Product } from "@/app/types";
 
 // ─── Product Analysis Page ────────────────────────────────────────────────────
-export function ProductAnalysisPage({ product, onAddToCollection, onRemoveFromCollection }: { product: Product; onAddToCollection: (product: Product) => void; onRemoveFromCollection: (id: number) => void }) {
+export function ProductAnalysisPage({ product }: { product: Product }) {
   const dispatch = useAppDispatch();
-  const tempCollection = useAppSelector(state => state.collection.tempCollection);
-  const [sentimentFilter, setSentimentFilter] = useState("all");
-  const [attrFocus, setAttrFocus]             = useState("all");
-  const [attrSentiment, setAttrSentiment]     = useState("all");
-  const [sortBy, setSortBy]                   = useState("newest");
-  const [searchReview, setSearchReview]       = useState("");
-  const addedToCollection = tempCollection.some(item => item.id === product.id);
+  const [reviewFilter, setReviewFilter] = useState<{
+    attribute: string;
+    rangeLabel: string;
+    score: number;
+  } | null>(null);
 
-  const handleShare = async () => {
-    const shareData = { title: product.name, text: `${product.brand} product analysis`, url: window.location.href };
+  const handleCopyLink = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-        return;
-      }
       await navigator.clipboard.writeText(window.location.href);
       dispatch(showToast({ message: "Product link copied", variant: "success" }));
     } catch {
-      dispatch(showToast({ message: "Unable to share product", variant: "failed" }));
+      dispatch(showToast({ message: "Unable to copy product link", variant: "failed" }));
     }
   };
-
-  const handleCaptureScreenshot = async () => {
-    const previewWindow = window.open("", "_blank");
-    try {
-      const { domToBlob } = await import("modern-screenshot");
-      const blob = await domToBlob(document.body, {
-        backgroundColor: getComputedStyle(document.body).backgroundColor || "#ffffff",
-        width: window.innerWidth,
-        height: window.innerHeight,
-        scale: window.devicePixelRatio || 1,
-        style: {
-          transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
-          transformOrigin: "top left",
-        },
-      });
-      if (!blob) throw new Error("Screenshot capture returned no image");
-
-      const filename = `${product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "product-analysis"}-screenshot.png`;
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.download = filename;
-      link.href = objectUrl;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      if (previewWindow) {
-        previewWindow.document.title = filename;
-        previewWindow.location.href = objectUrl;
-      } else {
-        window.open(objectUrl, "_blank");
-      }
-
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
-      dispatch(showToast({ message: "Screenshot downloaded and opened", variant: "success" }));
-    } catch {
-      previewWindow?.close();
-      dispatch(showToast({ message: "Unable to capture screenshot", variant: "failed" }));
-    }
-  };
-
-  const filteredReviews = REVIEWS.filter(r => {
-    const matchS = sentimentFilter === "all" || r.sentiment === sentimentFilter;
-    const matchA = attrFocus === "all" || r.attributes.includes(attrFocus);
-    const matchAttrSentiment = attrSentiment === "all" || r.sentiment === (attrSentiment === "mixed" ? "neutral" : attrSentiment);
-    const matchQ = !searchReview || r.text.toLowerCase().includes(searchReview.toLowerCase());
-    return matchS && matchA && matchAttrSentiment && matchQ;
-  });
-
-  const selectCls =
-    "text-xs border border-border rounded-lg px-2.5 py-1.5 bg-background text-foreground " +
-    "focus:outline-none focus:border-primary transition-all";
 
   return (
     <div>
@@ -120,18 +62,8 @@ export function ProductAnalysisPage({ product, onAddToCollection, onRemoveFromCo
             </div>
           </div>
           <div className="flex w-full flex-wrap justify-center gap-3 sm:w-auto sm:shrink-0 sm:justify-end">
-            <button
-              onClick={() => addedToCollection ? onRemoveFromCollection(product.id) : onAddToCollection(product)}
-              className={cx("flex h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 text-[10px] font-black uppercase tracking-[0.12em] shadow-lg transition-all",
-                addedToCollection ? "bg-emerald-600 text-white hover:bg-emerald-700" : "bg-primary text-white hover:bg-primary/90 shadow-primary/25"
-              )}
-            >
-              {addedToCollection ? <Check size={13} /> : <Plus size={13} />}
-              <span>{addedToCollection ? "Remove From Collection" : "Add To Collection"}</span>
-            </button>
-            <button onClick={handleShare} className="flex h-10 items-center justify-center gap-1.5 rounded-lg border border-primary/30 px-3.5 text-[10px] font-black uppercase tracking-[0.12em] text-primary transition-all hover:bg-primary/8">
-              <Share2 size={13} />
-              <span>Share</span>
+            <button onClick={handleCopyLink} className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/30 text-primary transition-all hover:bg-primary/8" aria-label="Copy product link" title="Copy product link">
+              <Copy size={15} />
             </button>
           </div>
         </div>
@@ -162,7 +94,10 @@ export function ProductAnalysisPage({ product, onAddToCollection, onRemoveFromCo
                   {ATTRIBUTES.slice(i * 2, i * 2 + 2).map(attr => (
                     <div key={attr.name}>
                       <p className="text-sm font-semibold text-foreground mb-2">{attr.name}</p>
-                      <SentimentBar data={{ positive: attr.positive, neutral: attr.neutral, negative: attr.negative }} />
+                      <SentimentBar
+                        data={{ positive: attr.positive, neutral: attr.neutral, negative: attr.negative }}
+                        onSegmentClick={segment => setReviewFilter({ attribute: attr.name, rangeLabel: segment.label, score: segment.value })}
+                      />
                       <p className="text-[11px] text-muted-foreground italic mt-1.5">
                         Discussed in {Math.round(attr.usage * 100)}% of reviews
                       </p>
@@ -192,128 +127,18 @@ export function ProductAnalysisPage({ product, onAddToCollection, onRemoveFromCo
         </div>
 
         {/* ── Reviews Feed ──────────────────────────────────────────────── */}
-        <div className="bg-card rounded-2xl border border-border shadow-sm p-[40px]">
-
-          {/* Feed header */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.34em] text-foreground">Reviews Feed</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="relative w-full sm:w-80">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground" />
-                <input
-                  value={searchReview}
-                  onChange={e => setSearchReview(e.target.value)}
-                  placeholder="Search reviews & feedback..."
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-all shadow-sm"
-                />
-              </div>
-              <button onClick={handleCaptureScreenshot} className="h-11 w-11 rounded-xl bg-muted text-foreground flex items-center justify-center hover:bg-accent transition-colors" aria-label="Capture screenshot">
-                <Camera size={17} />
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-16">
-            <div>
-              <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.24em] mb-2">Sort By</p>
-              <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="w-full rounded-xl border border-transparent bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all">
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-              </select>
-            </div>
-            <div>
-              <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.24em] mb-2">Overall Sentiment</p>
-              <select value={sentimentFilter} onChange={e => setSentimentFilter(e.target.value)} className="w-full rounded-xl border border-transparent bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all">
-                <option value="all">All Overall Sentiments</option>
-                <option value="positive">Positive</option>
-                <option value="neutral">Neutral</option>
-                <option value="negative">Negative</option>
-              </select>
-            </div>
-            <div>
-              <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.24em] mb-2">Filter By Attribute</p>
-              <select value={attrFocus} onChange={e => setAttrFocus(e.target.value)} className="w-full rounded-xl border border-transparent bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all">
-                <option value="all">All Attributes</option>
-                {ATTRIBUTE_NAMES.map(a => <option key={a}>{a}</option>)}
-              </select>
-            </div>
-            <div>
-              <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.24em] mb-4">Attribute Sentiment</p>
-              <div className="grid grid-cols-3 gap-3">
-                {(["positive", "mixed", "negative"] as const).map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setAttrSentiment(v => v === s ? "all" : s)}
-                    className={cx(
-                      "py-2 text-[10px] font-black uppercase tracking-[0.18em] transition-all",
-                      attrSentiment === s
-                        ? s === "positive"
-                          ? "text-emerald-600"
-                          : s === "negative"
-                            ? "text-red-500"
-                            : "text-amber-500"
-                        : s === "positive"
-                          ? "text-muted-foreground/50 hover:text-emerald-600"
-                          : s === "negative"
-                            ? "text-muted-foreground/50 hover:text-red-500"
-                            : "text-muted-foreground/50 hover:text-amber-500"
-                    )}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Review list */}
-          {filteredReviews.length === 0 ? (
-            <div className="text-center py-14 text-muted-foreground">
-              <Search size={28} className="mx-auto mb-2 opacity-20" />
-              <p className="text-sm">No reviews matched</p>
-            </div>
-          ) : (
-            <div className="space-y-6 max-h-[640px] overflow-y-auto pr-3">
-              {filteredReviews.map(review => (
-                <div
-                  key={review.id}
-                  className="rounded-3xl bg-card border border-border px-8 py-7 shadow-xl shadow-slate-900/10 hover:border-primary/20 transition-colors"
-                >
-                  <div className="flex flex-wrap items-center gap-6 mb-6">
-                    <span className={cx(
-                      "inline-flex rounded-full border px-5 py-2 text-[9px] font-black uppercase tracking-[0.22em]",
-                      review.sentiment === "positive"
-                        ? "border-emerald-200 text-emerald-600"
-                        : review.sentiment === "negative"
-                          ? "border-red-200 text-red-500"
-                          : "border-amber-200 text-amber-500"
-                    )}>
-                      {review.sentiment}
-                    </span>
-                    <div className="flex items-center gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} size={15} className={i < review.rating ? "text-amber-400 fill-amber-400" : "text-foreground"} />
-                      ))}
-                    </div>
-                  </div>
-
-                  <p className="text-base font-black text-foreground mb-4">{review.reviewer}</p>
-                  <p className="text-sm italic font-semibold text-muted-foreground leading-relaxed">"{review.text}"</p>
-
-                  {/* {review.attributes.length > 0 && (
-                    <div className="flex gap-2 mt-6 flex-wrap">
-                      {review.attributes.map(a => (
-                        <span key={a} className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">{a}</span>
-                      ))}
-                    </div>
-                  )} */}
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="h-[880px] rounded-2xl border border-border bg-card p-[40px] shadow-sm">
+          <ComparisonReviewFeed variant="wide" />
         </div>
+        {reviewFilter && (
+          <FilteredReviewModal
+            product={product}
+            attribute={reviewFilter.attribute}
+            rangeLabel={reviewFilter.rangeLabel}
+            score={reviewFilter.score}
+            onClose={() => setReviewFilter(null)}
+          />
+        )}
 
       </div>
     </div>
@@ -321,9 +146,9 @@ export function ProductAnalysisPage({ product, onAddToCollection, onRemoveFromCo
 }
 
 // ─── Route Wrapper ────────────────────────────────────────────────────────────
-export function ProductAnalysisRoute({ onAddToCollection, onRemoveFromCollection }: { onAddToCollection: (product: Product) => void; onRemoveFromCollection: (id: number) => void }) {
+export function ProductAnalysisRoute() {
   const { productId } = useParams<{ productId: string }>();
   const product = PRODUCTS.find(p => p.id === Number(productId));
   if (!product) return <Navigate to="/product-catalog" replace />;
-  return <ProductAnalysisPage product={product} onAddToCollection={onAddToCollection} onRemoveFromCollection={onRemoveFromCollection} />;
+  return <ProductAnalysisPage product={product} />;
 }

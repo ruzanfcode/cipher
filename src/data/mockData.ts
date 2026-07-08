@@ -15,26 +15,26 @@ export const BRANDS = [
 
 export const PRODUCTS: Product[] = [
   // ── Nike ──────────────────────────────────────────────────────────────────
-  { id:  1, name: "Dri-FIT Training Tee",         brand: "Nike",      category: "Sport Tops",       reviews: 2897, rating: 4.3, sentiment: { positive: 72, neutral: 16, negative: 12 }, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=280&fit=crop&auto=format" },
-  { id:  2, name: "Tech Fleece Full-Zip Hoodie",  brand: "Nike",      category: "Athleisure",       reviews: 3170, rating: 4.6, sentiment: { positive: 80, neutral: 12, negative: 8  }, image: "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400&h=280&fit=crop&auto=format" },
-  { id:  3, name: "Club Fleece Jogger Pants",     brand: "Nike",      category: "Athleisure",       reviews: 2237, rating: 4.2, sentiment: { positive: 67, neutral: 19, negative: 14 }, image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=280&fit=crop&auto=format" },
-  { id:  4, name: "Windrunner Running Jacket",    brand: "Nike",      category: "Outerwear",        reviews: 2037, rating: 4.5, sentiment: { positive: 78, neutral: 13, negative: 9  }, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=280&fit=crop&auto=format" },
-  { id:  5, name: "Pro Compression Shorts",       brand: "Nike",      category: "Sport Bottoms",    reviews: 1593, rating: 4.1, sentiment: { positive: 63, neutral: 21, negative: 16 }, image: "https://images.unsplash.com/photo-1562886877-f7e20b63b7b0?w=400&h=280&fit=crop&auto=format" },
-  { id:  6, name: "Sportswear Phoenix Fleece",    brand: "Nike",      category: "Tops",             reviews: 1654, rating: 4.0, sentiment: { positive: 61, neutral: 22, negative: 17 }, image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=280&fit=crop&auto=format" },
+  { id:  1, name: "Dri-FIT Training Tee",         brand: "Nike",      category: "Sport Tops",       reviews: 7, rating: 4.3, sentiment: { positive: 72, neutral: 16, negative: 12 }, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=280&fit=crop&auto=format" },
+  { id:  2, name: "Tech Fleece Full-Zip Hoodie",  brand: "Nike",      category: "Athleisure",       reviews: 150, rating: 4.6, sentiment: { positive: 80, neutral: 12, negative: 8  }, image: "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400&h=280&fit=crop&auto=format" },
+  { id:  3, name: "Club Fleece Jogger Pants",     brand: "Nike",      category: "Athleisure",       reviews: 227, rating: 4.2, sentiment: { positive: 67, neutral: 19, negative: 14 }, image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=280&fit=crop&auto=format" },
+  { id:  4, name: "Windrunner Running Jacket",    brand: "Nike",      category: "Outerwear",        reviews: 27, rating: 4.5, sentiment: { positive: 78, neutral: 13, negative: 9  }, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=280&fit=crop&auto=format" },
+  { id:  5, name: "Pro Compression Shorts",       brand: "Nike",      category: "Sport Bottoms",    reviews: 73, rating: 4.1, sentiment: { positive: 63, neutral: 21, negative: 16 }, image: "https://images.unsplash.com/photo-1562886877-f7e20b63b7b0?w=400&h=280&fit=crop&auto=format" },
+  { id:  6, name: "Sportswear Phoenix Fleece",    brand: "Nike",      category: "Tops",             reviews: 54, rating: 4.0, sentiment: { positive: 61, neutral: 22, negative: 17 }, image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=280&fit=crop&auto=format" },
   // ── Adidas ────────────────────────────────────────────────────────────────
-  { id:  7, name: "Trefoil Graphic Tee",          brand: "Adidas",    category: "Originals",        reviews: 2260, rating: 4.3, sentiment: { positive: 71, neutral: 17, negative: 12 }, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=280&fit=crop&auto=format" },
-  { id:  8, name: "Essentials Fleece Hoodie",     brand: "Adidas",    category: "Athleisure",       reviews: 1704, rating: 4.2, sentiment: { positive: 68, neutral: 18, negative: 14 }, image: "https://images.unsplash.com/photo-1578681041175-9717c638de37?w=400&h=280&fit=crop&auto=format" },
-  { id:  9, name: "Tiro 21 Track Pants",          brand: "Adidas",    category: "Training",         reviews: 1482, rating: 4.0, sentiment: { positive: 62, neutral: 22, negative: 16 }, image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400&h=280&fit=crop&auto=format" },
-  { id: 10, name: "Stadium Track Jacket",         brand: "Adidas",    category: "Outerwear",        reviews: 2391, rating: 4.5, sentiment: { positive: 76, neutral: 14, negative: 10 }, image: "https://images.unsplash.com/photo-1547949003-9792a18a2601?w=400&h=280&fit=crop&auto=format" },
-  { id: 11, name: "Adicolor Classics Tee",        brand: "Adidas",    category: "Originals",        reviews: 1876, rating: 4.4, sentiment: { positive: 74, neutral: 15, negative: 11 }, image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=280&fit=crop&auto=format" },
+  { id:  7, name: "Trefoil Graphic Tee",          brand: "Adidas",    category: "Originals",        reviews: 60, rating: 4.3, sentiment: { positive: 71, neutral: 17, negative: 12 }, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=280&fit=crop&auto=format" },
+  { id:  8, name: "Essentials Fleece Hoodie",     brand: "Adidas",    category: "Athleisure",       reviews: 104, rating: 4.2, sentiment: { positive: 68, neutral: 18, negative: 14 }, image: "https://images.unsplash.com/photo-1578681041175-9717c638de37?w=400&h=280&fit=crop&auto=format" },
+  { id:  9, name: "Tiro 21 Track Pants",          brand: "Adidas",    category: "Training",         reviews: 0, rating: 4.0, sentiment: { positive: 62, neutral: 22, negative: 16 }, image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400&h=280&fit=crop&auto=format" },
+  { id: 10, name: "Stadium Track Jacket",         brand: "Adidas",    category: "Outerwear",        reviews: 91, rating: 4.5, sentiment: { positive: 76, neutral: 14, negative: 10 }, image: "https://images.unsplash.com/photo-1547949003-9792a18a2601?w=400&h=280&fit=crop&auto=format" },
+  { id: 11, name: "Adicolor Classics Tee",        brand: "Adidas",    category: "Originals",        reviews: 16, rating: 4.4, sentiment: { positive: 74, neutral: 15, negative: 11 }, image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=280&fit=crop&auto=format" },
   { id: 12, name: "Techfit Compression Tights",   brand: "Adidas",    category: "Training",         reviews: 987,  rating: 4.1, sentiment: { positive: 65, neutral: 20, negative: 15 }, image: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=400&h=280&fit=crop&auto=format" },
   // ── H&M ───────────────────────────────────────────────────────────────────
   { id: 13, name: "Slim Fit Cotton Tee",          brand: "H&M",       category: "Basics",           reviews: 4521, rating: 3.8, sentiment: { positive: 56, neutral: 24, negative: 20 }, image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=280&fit=crop&auto=format" },
-  { id: 14, name: "Regular Fit Pullover Hoodie",  brand: "H&M",       category: "Basics",           reviews: 3210, rating: 3.9, sentiment: { positive: 58, neutral: 23, negative: 19 }, image: "https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400&h=280&fit=crop&auto=format" },
-  { id: 15, name: "Slim Fit Chino Trousers",      brand: "H&M",       category: "Trousers",         reviews: 2876, rating: 4.0, sentiment: { positive: 61, neutral: 22, negative: 17 }, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=280&fit=crop&auto=format" },
-  { id: 16, name: "Oversized Denim Jacket",       brand: "H&M",       category: "Outerwear",        reviews: 3127, rating: 4.2, sentiment: { positive: 67, neutral: 20, negative: 13 }, image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=280&fit=crop&auto=format" },
-  { id: 17, name: "Ribbed Tank Top",              brand: "H&M",       category: "Tops",             reviews: 2541, rating: 3.8, sentiment: { positive: 55, neutral: 25, negative: 20 }, image: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400&h=280&fit=crop&auto=format" },
-  { id: 18, name: "Relaxed Fit Sweatshirt",       brand: "H&M",       category: "Basics",           reviews: 1987, rating: 4.1, sentiment: { positive: 64, neutral: 21, negative: 15 }, image: "https://images.unsplash.com/photo-1583744946564-b52ac1c389c8?w=400&h=280&fit=crop&auto=format" },
+  { id: 14, name: "Regular Fit Pullover Hoodie",  brand: "H&M",       category: "Basics",           reviews: 10, rating: 3.9, sentiment: { positive: 58, neutral: 23, negative: 19 }, image: "https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400&h=280&fit=crop&auto=format" },
+  { id: 15, name: "Slim Fit Chino Trousers",      brand: "H&M",       category: "Trousers",         reviews: 26, rating: 4.0, sentiment: { positive: 61, neutral: 22, negative: 17 }, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=280&fit=crop&auto=format" },
+  { id: 16, name: "Oversized Denim Jacket",       brand: "H&M",       category: "Outerwear",        reviews: 87, rating: 4.2, sentiment: { positive: 67, neutral: 20, negative: 13 }, image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=280&fit=crop&auto=format" },
+  { id: 17, name: "Ribbed Tank Top",              brand: "H&M",       category: "Tops",             reviews: 251, rating: 3.8, sentiment: { positive: 55, neutral: 25, negative: 20 }, image: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400&h=280&fit=crop&auto=format" },
+  { id: 18, name: "Relaxed Fit Sweatshirt",       brand: "H&M",       category: "Basics",           reviews: 87, rating: 4.1, sentiment: { positive: 64, neutral: 21, negative: 15 }, image: "https://images.unsplash.com/photo-1583744946564-b52ac1c389c8?w=400&h=280&fit=crop&auto=format" },
   { id: 19, name: "Wide-Leg Linen Trousers",      brand: "H&M",       category: "Trousers",         reviews: 1654, rating: 4.0, sentiment: { positive: 62, neutral: 22, negative: 16 }, image: "https://images.unsplash.com/photo-1594938298603-c8148c4b8a79?w=400&h=280&fit=crop&auto=format" },
   // ── Zara ──────────────────────────────────────────────────────────────────
   { id: 20, name: "Linen Overshirt",              brand: "Zara",      category: "Shirts",           reviews: 1543, rating: 4.4, sentiment: { positive: 75, neutral: 15, negative: 10 }, image: "https://images.unsplash.com/photo-1607345366928-199ea26cfe3e?w=400&h=280&fit=crop&auto=format" },
@@ -128,10 +128,10 @@ export const SBUS: SBU[] = [
   { id: 4, name: "Global Brands", admin: "Unassigned",    users: 8,  allowedUsers: 20, status: "Inactive", products: 67,  collections: 9  },
 ];
 
-export const USER_PROFILES: Record<Role, { name: string; email: string; sbu: string; roleLabel: string }> = {
-  system_admin: { name: "Jordan Lee",   email: "jordan.lee@fcodelabs.com", sbu: "Global",   roleLabel: "System Admin" },
-  sbu_admin:    { name: "Alex Chen",    email: "alex.chen@fcodelabs.com",  sbu: "Americas", roleLabel: "SBU Admin" },
-  sbu_user:     { name: "Maria Santos", email: "m.santos@fcodelabs.com",   sbu: "Americas", roleLabel: "User" },
+export const USER_PROFILES: Record<Role, { userId: string; name: string; email: string; sbu: string; roleLabel: string }> = {
+  system_admin: { userId: "system_admin", name: "Jordan Lee",   email: "jordan.lee@fcodelabs.com", sbu: "Global",   roleLabel: "System Admin" },
+  sbu_admin:    { userId: "sbu_admin",    name: "Alex Chen",    email: "alex.chen@fcodelabs.com",  sbu: "Americas", roleLabel: "SBU Admin" },
+  sbu_user:     { userId: "sbu_user",     name: "Maria Santos", email: "m.santos@fcodelabs.com",   sbu: "Americas", roleLabel: "User" },
 };
 
 export const AI_RESPONSES = [
@@ -143,6 +143,43 @@ export const AI_RESPONSES = [
 ];
 
 export const INITIAL_SAVED: SavedCollection[] = [
-  { id: 1, name: "Q3 Competitor Analysis", owner: "Alex Chen", created: "Mar 10, 2024", productIds: [1, 2, 3] },
-  { id: 2, name: "Premium Segment Study",  owner: "You",       created: "Feb 28, 2024", productIds: [4, 8] },
+  {
+    id: 9000,
+    name: "Global Brand Watchlist",
+    ownerId: "system_admin",
+    owner: "Jordan Lee",
+    created: "Jul 7, 2026",
+    productIds: [26, 27, 56, 57],
+    sharedById: "sbu_admin",
+    sharedBy: "Alex Chen",
+    sharedFromId: 8799,
+    sharedWithId: "system_admin",
+    sharedWith: "jordan.lee@fcodelabs.com",
+  },
+  {
+    id: 9001,
+    name: "APAC Activewear Signal",
+    ownerId: "sbu_user",
+    owner: "Maria Santos",
+    created: "Jul 7, 2026",
+    productIds: [33, 34, 38, 39],
+    sharedById: "user-4",
+    sharedBy: "Priya Patel",
+    sharedFromId: 8801,
+    sharedWithId: "sbu_user",
+    sharedWith: "m.santos@fcodelabs.com",
+  },
+  {
+    id: 9002,
+    name: "EMEA Outerwear Readout",
+    ownerId: "sbu_admin",
+    owner: "Alex Chen",
+    created: "Jul 7, 2026",
+    productIds: [50, 51, 56, 60],
+    sharedById: "user-5",
+    sharedBy: "James O'Brien",
+    sharedFromId: 8802,
+    sharedWithId: "sbu_admin",
+    sharedWith: "alex.chen@fcodelabs.com",
+  },
 ];

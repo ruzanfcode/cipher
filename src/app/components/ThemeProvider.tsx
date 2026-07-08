@@ -56,12 +56,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const path = location.pathname;
 
   const headerTab: HeaderTab =
-    path.startsWith("/dashboard")  ? "dashboard" :
-    path.startsWith("/collection") ? "collection" :
-    path.startsWith("/sbu") || path.startsWith("/sbu/") ? "sbu" : "product-catalog";
+    path.startsWith("/collections") || path.startsWith("/collection") || path === "/comparison" || path === "/aggregate" ? "collections" :
+    path.startsWith("/analytics") || path.startsWith("/dashboard") ? "analytics" :
+    path.startsWith("/admin") || path.startsWith("/sbu") ? "admin" : "product-catalog";
+
+  const adminSection =
+    path.startsWith("/admin/data-management") ? "data-management" as const :
+    path.startsWith("/admin/user-management") || path.startsWith("/sbu") ? "user-management" as const : null;
 
   const isSubPage =
-    path.startsWith("/product/") || path.startsWith("/sbu/") ||
+    path.startsWith("/product/") || path.startsWith("/sbu/") || path.match(/^\/admin\/user-management\/\d+/) ||
     path === "/comparison"       || path === "/aggregate";
 
   const showAIChat =
@@ -80,7 +84,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           themeMode={themeMode}
           onThemeChange={t => dispatch(setThemeMode(t))}
           headerTab={headerTab}
-          onHeaderTabChange={tab => navigate(`/${tab}`)}
+          adminSection={adminSection}
+          onHeaderTabChange={tab => navigate(tab === "admin" ? "/admin/user-management" : `/${tab}`)}
+          onAdminSectionChange={section => navigate(`/admin/${section}`)}
           tempCollectionCount={tempCollectionCount}
           showBack={isSubPage}
           onBack={() => navigate(-1)}

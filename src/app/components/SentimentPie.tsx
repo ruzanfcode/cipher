@@ -38,20 +38,6 @@ export function SentimentPie({ data }: { data: { positive: number; neutral: numb
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">{positive.name}</span>
         </div>
       </div>
-      <div className="mt-14 space-y-3">
-        {chartData.map(d => (
-          <div key={d.name} className="grid grid-cols-[6rem_minmax(4rem,1fr)_3.75rem] items-center gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: d.color }} />
-            <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground truncate">{d.name}</span>
-            </div>
-            <div className="flex-1 rounded-full overflow-hidden bg-border/40" style={{ height: 4 }}>
-              <div className="h-full rounded-full" style={{ width: `${d.value}%`, background: d.color }} />
-            </div>
-            <span className="text-xs font-mono font-semibold text-foreground text-right whitespace-nowrap">{d.value.toFixed(1)}%</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

@@ -29,11 +29,33 @@ export const collectionSlice = createSlice({
       state.savedCollections.push(action.payload);
       state.tempCollection = [];
     },
+    createSavedCollection: (state, action: PayloadAction<SavedCollection>) => {
+      state.savedCollections.push(action.payload);
+    },
+    shareSavedCollection: (state, action: PayloadAction<SavedCollection[]>) => {
+      state.savedCollections.push(...action.payload);
+    },
+    setProductCollectionAssignments: (state, action: PayloadAction<{ productId: number; collectionIds: number[]; owner: string; ownerId: string }>) => {
+      state.savedCollections = state.savedCollections.map(collection => {
+        const isOwner = collection.ownerId ? collection.ownerId === action.payload.ownerId : collection.owner === action.payload.owner;
+        if (!isOwner) return collection;
+        if (collection.sharedBy) return collection;
+        const shouldInclude = action.payload.collectionIds.includes(collection.id);
+        const hasProduct = collection.productIds.includes(action.payload.productId);
+        if (shouldInclude && !hasProduct) {
+          return { ...collection, productIds: [...collection.productIds, action.payload.productId] };
+        }
+        if (!shouldInclude && hasProduct) {
+          return { ...collection, productIds: collection.productIds.filter(id => id !== action.payload.productId) };
+        }
+        return collection;
+      });
+    },
     deleteSavedCollection: (state, action: PayloadAction<number>) => {
       state.savedCollections = state.savedCollections.filter(collection => collection.id !== action.payload);
     },
   },
 });
 
-export const { addToCollection, removeFromCollection, saveCollection, deleteSavedCollection } = collectionSlice.actions;
+export const { addToCollection, removeFromCollection, saveCollection, createSavedCollection, shareSavedCollection, setProductCollectionAssignments, deleteSavedCollection } = collectionSlice.actions;
 export default collectionSlice.reducer;

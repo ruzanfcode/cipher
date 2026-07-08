@@ -8,6 +8,7 @@ import { AggregateRoute }       from "@/app/pages/AggregatePage";
 import { DashboardPage }        from "@/app/pages/DashboardPage";
 import { SBUPage }             from "@/app/pages/SBUPage";
 import { SBUDetailsRoute }      from "@/app/pages/SBUDetailsPage";
+import { DataManagementPage }   from "@/app/pages/DataManagementPage";
 import { LoginPage }            from "@/app/pages/LoginPage";
 import { NotFoundPage }         from "@/app/pages/NotFoundPage";
 
@@ -47,7 +48,8 @@ export function AppRoutes({
 }: AppRoutesProps) {
   return (
     <Routes>
-      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/analytics" element={<DashboardPage />} />
+      <Route path="/dashboard" element={<Navigate to="/analytics" replace />} />
       <Route
         path="/product-catalog"
         element={
@@ -63,20 +65,23 @@ export function AppRoutes({
         }
       />
       <Route
-        path="/collection"
+        path="/collections"
         element={
           <CollectionPage
-            onRemoveFromCollection={onRemoveFromCollection}
-            onSave={onSaveCollection}
             onCompare={onCompare}
             onAggregate={onAggregate}
             onAnalyze={onAnalyze}
           />
         }
       />
-      <Route path="/sbu"               element={<SBUPage role={role} onSelectSBU={sbu => onSelectSBU(sbu.id)} />} />
-      <Route path="/product/:productId" element={<ProductAnalysisRoute onAddToCollection={onAddToCollection} onRemoveFromCollection={onRemoveFromCollection} />} />
-      <Route path="/sbu/:sbuId"         element={<SBUDetailsRoute />} />
+      <Route path="/collection"        element={<Navigate to="/collections" replace />} />
+      <Route path="/admin"             element={<Navigate to="/admin/user-management" replace />} />
+      <Route path="/admin/user-management" element={<SBUPage role={role} onSelectSBU={sbu => onSelectSBU(sbu.id)} />} />
+      <Route path="/admin/data-management" element={<DataManagementPage />} />
+      <Route path="/sbu"               element={<Navigate to="/admin/user-management" replace />} />
+      <Route path="/product/:productId" element={<ProductAnalysisRoute />} />
+      <Route path="/admin/user-management/:sbuId" element={<SBUDetailsRoute />} />
+      <Route path="/sbu/:sbuId"         element={<Navigate to="/admin/user-management/:sbuId" replace />} />
       <Route path="/comparison"         element={<ComparisonRoute onAggregate={onAggregate} />} />
       <Route path="/aggregate"          element={<AggregateRoute  onCompare={onCompare} />} />
       <Route path="/login"              element={<LoginPage onLogin={onLogin}/>} />

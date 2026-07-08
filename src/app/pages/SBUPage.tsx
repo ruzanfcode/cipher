@@ -172,25 +172,25 @@ export function SBUPage({ role, onSelectSBU }: { role: Role; onSelectSBU: (sbu: 
   const confirmCopy = confirmAction && {
     reject: {
       title: "Reject pending invitation?",
-      message: `This will remove the pending invitation for ${confirmAction.user.email}.`,
+      message: `Are you sure you want to reject this invitation? This will remove the pending invitation for ${confirmAction.user.email}.`,
       label: "Reject",
       tone: "warning" as const,
     },
     disable: {
       title: "Disable user?",
-      message: `${confirmAction.user.name} will lose access until an administrator restores the account.`,
+      message: `Are you sure you want to disable ${confirmAction.user.name}? This user will lose access until an administrator restores the account.`,
       label: "Disable",
       tone: "warning" as const,
     },
     activate: {
       title: "Activate user?",
-      message: `${confirmAction.user.name} will regain access to this SBU workspace.`,
+      message: `Are you sure you want to activate ${confirmAction.user.name}? This user will regain access to this SBU workspace.`,
       label: "Activate",
       tone: "success" as const,
     },
     delete: {
       title: "Delete user?",
-      message: `This will permanently remove ${confirmAction.user.name} from this SBU list.`,
+      message: `Are you sure you want to delete ${confirmAction.user.name}? This will permanently remove the user from this SBU list.`,
       label: "Delete",
       tone: "danger" as const,
     },

@@ -1,11 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { Search, X, Bookmark, Check, Link } from "lucide-react";
 import { BRANDS, PRODUCTS } from "@/data/mockData";
+import { AddToCollectionModal, MAX_USER_COLLECTIONS } from "@/app/components/AddToCollectionModal";
 import { BrandLogoSVG } from "@/app/components/BrandLogoSVG";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import { ConfidenceBadge } from "@/app/components/ConfidenceBadge";
 import { cx } from "@/app/lib/utils";
-import { useAppSelector } from "@/app/store/hooks";
-import type { Product, SearchMode } from "@/app/types";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { assignProductToCollectionsAction, createSavedCollectionAction, deleteSavedCollectionAction } from "@/app/store/actions/collectionActions";
+import type { Product, Role, SavedCollection, SearchMode } from "@/app/types";
+
+function collectionOwner(role: Role | null) {
+  return role === "sbu_admin" ? "Alex Chen" :
+    role === "sbu_user" ? "Maria Santos" : "Jordan Lee";
+}
+
+function collectionOwnerId(role: Role | null) {
+  return role ?? "system_admin";
+}
 
 export function SearchPage({
   onAddToCollection, onRemoveFromCollection, onAnalyze,
@@ -20,10 +32,22 @@ export function SearchPage({
   onClearBrands: () => void;
   onSearchModeChange: (m: SearchMode) => void;
 }) {
-  const tempCollection = useAppSelector(s => s.collection.tempCollection);
+  const dispatch = useAppDispatch();
+  const role = useAppSelector(s => s.auth.role);
+  const savedCollections = useAppSelector(s => s.collection.savedCollections);
   const query          = useAppSelector(s => s.search.query);
   const selectedBrands = useAppSelector(s => s.search.selectedBrands);
   const searchMode     = useAppSelector(s => s.search.searchMode);
+  const [collectionProduct, setCollectionProduct] = useState<Product | null>(null);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<number[]>([]);
+  const [initialCollectionIds, setInitialCollectionIds] = useState<number[]>([]);
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [collectionToRemove, setCollectionToRemove] = useState<SavedCollection | null>(null);
+
+  const currentOwner = collectionOwner(role);
+  const currentOwnerId = collectionOwnerId(role);
+  const userCollections = savedCollections.filter(collection => collection.ownerId ? collection.ownerId === currentOwnerId : collection.owner === currentOwner);
+  const editableCollections = userCollections.filter(collection => !collection.sharedBy);
 
   const isSearching = query.trim().length > 0;
 
@@ -35,7 +59,55 @@ export function SearchPage({
   });
 
   const activeBrands = selectedBrands.map(id => BRANDS.find(b => b.id === id)).filter(Boolean) as typeof BRANDS;
-  const inTemp = (id: number) => tempCollection.some(p => p.id === id);
+
+  const openCollectionModal = (product: Product) => {
+    const assignedIds = editableCollections.filter(collection => collection.productIds.includes(product.id)).map(collection => collection.id);
+    setCollectionProduct(product);
+    setNewCollectionName("");
+    setSelectedCollectionIds(assignedIds);
+    setInitialCollectionIds(assignedIds);
+  };
+
+  const toggleSelectedCollection = (id: number) => {
+    setSelectedCollectionIds(current => current.includes(id) ? current.filter(collectionId => collectionId !== id) : [...current, id]);
+  };
+
+  const createCollection = () => {
+    const normalizedName = newCollectionName.trim().toLowerCase();
+    const hasDuplicateName = editableCollections.some(collection => collection.name.trim().toLowerCase() === normalizedName);
+    if (!collectionProduct || !normalizedName || hasDuplicateName || editableCollections.length >= MAX_USER_COLLECTIONS) return;
+    const collectionId = Date.now();
+    dispatch(createSavedCollectionAction(newCollectionName.trim(), role, [], collectionId));
+    setSelectedCollectionIds(current => current.includes(collectionId) ? current : [...current, collectionId]);
+    setNewCollectionName("");
+  };
+
+  const saveCollectionAssignment = () => {
+    if (!collectionProduct) return;
+    const normalizedName = newCollectionName.trim().toLowerCase();
+    const hasDuplicateName = editableCollections.some(collection => collection.name.trim().toLowerCase() === normalizedName);
+    const canCreateNewCollection = normalizedName && !hasDuplicateName && editableCollections.length < MAX_USER_COLLECTIONS;
+    if (hasAssignmentChanges) {
+      dispatch(assignProductToCollectionsAction(collectionProduct, selectedCollectionIds, role));
+    }
+    if (canCreateNewCollection) {
+      dispatch(createSavedCollectionAction(newCollectionName.trim(), role, [collectionProduct.id]));
+    }
+    setCollectionProduct(null);
+    setNewCollectionName("");
+    setInitialCollectionIds([]);
+  };
+
+  const hasAssignmentChanges = selectedCollectionIds.length !== initialCollectionIds.length || selectedCollectionIds.some(id => !initialCollectionIds.includes(id));
+  const canSaveCollectionAssignment = hasAssignmentChanges;
+
+  const removeCollection = () => {
+    if (!collectionToRemove) return;
+    dispatch(deleteSavedCollectionAction(collectionToRemove.id));
+    setSelectedCollectionIds(current => current.filter(id => id !== collectionToRemove.id));
+    setInitialCollectionIds(current => current.filter(id => id !== collectionToRemove.id));
+    setCollectionToRemove(null);
+  };
 
   return (
     <div>
@@ -47,8 +119,7 @@ export function SearchPage({
       <div className="bg-card rounded-2xl border border-border shadow-sm p-6 sm:p-8 lg:p-10 transition-colors duration-200 hover:bg-[#e5e7eb] dark:hover:bg-[#e7ebf0] dark:hover:border-[#d8dde5] dark:hover:shadow-none">
       {/* Search panel */}
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-[10px] font-black tracking-[0.36em] text-primary uppercase">Search Mode</span>
+        <div className="flex items-center justify-end mb-4">
           <div className="inline-flex rounded-[10px] bg-slate-100 p-1 shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-100 dark:ring-slate-200/70">
             {(["keyword", "url"] as SearchMode[]).map(mode => (
               <button key={mode} onClick={() => onSearchModeChange(mode)}
@@ -81,7 +152,6 @@ export function SearchPage({
       {!isSearching && (
         <div className="max-w-8xl mx-auto mt-12">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary text-xxs primary">Available Brands</p>
             {selectedBrands.length > 0 && (
               <button onClick={onClearBrands} className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
                 <X size={11} /> Clear all
@@ -142,8 +212,7 @@ export function SearchPage({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map(product => {
-                const added = inTemp(product.id);
-                const collectionFull = tempCollection.length >= 10 && !added;
+                const added = editableCollections.some(collection => collection.productIds.includes(product.id));
                 const productCategory = product.category.replace(/\s+/g, "_").toUpperCase();
                 return (
                   <div key={product.id} className={cx("group rounded-[22px] bg-[#f3f4f6] border p-5 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/10 dark:bg-card flex flex-col",
@@ -159,18 +228,15 @@ export function SearchPage({
                             Analyze Now
                           </button>
                           <button
-                            onClick={() => added ? onRemoveFromCollection(product.id) : onAddToCollection(product)}
-                            disabled={collectionFull}
-                            title={collectionFull ? "Collection full (max 10)" : undefined}
+                            onClick={() => openCollectionModal(product)}
                             className={cx("mt-2 w-full h-10 rounded-lg text-[11px] font-black uppercase tracking-[0.12em] transition-colors flex items-center justify-center gap-2",
                               added
                                 ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                                : collectionFull
-                                  ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                                  : "bg-primary text-white hover:bg-primary/90"
+                                : "bg-primary text-white hover:bg-primary/90"
                             )}
                           >
-                            {added ? <><Check size={14} /><span>Added</span></> : <><Bookmark size={14} /><span>Add to Collection</span></>}
+                            {added ? <Check size={14} /> : <Bookmark size={14} />}
+                            <span>Add to a Collection</span>
                           </button>
                           <button onClick={() => onAnalyze(product)} className="mt-2 w-full h-10 rounded-lg text-[11px] font-black uppercase tracking-[0.12em] text-slate-900 hover:bg-white/70 transition-colors flex items-center justify-center gap-2">
                             <Link size={13} /> View Product
@@ -192,6 +258,31 @@ export function SearchPage({
             </div>
           )}
         </div>
+      )}
+      {collectionProduct && (
+        <AddToCollectionModal
+          product={collectionProduct}
+          collections={editableCollections}
+          selectedIds={selectedCollectionIds}
+          newCollectionName={newCollectionName}
+          canSave={canSaveCollectionAssignment}
+          onCollectionNameChange={setNewCollectionName}
+          onToggleCollection={toggleSelectedCollection}
+          onRemoveCollection={setCollectionToRemove}
+          onCreateCollection={createCollection}
+          onSave={saveCollectionAssignment}
+          onClose={() => { setCollectionProduct(null); setNewCollectionName(""); setInitialCollectionIds([]); }}
+        />
+      )}
+      {collectionToRemove && (
+        <ConfirmDialog
+          title="Remove collection?"
+          message={`Are you sure you want to remove "${collectionToRemove.name}"? This will permanently remove it from your saved collections.`}
+          confirmLabel="Remove"
+          tone="danger"
+          onCancel={() => setCollectionToRemove(null)}
+          onConfirm={removeCollection}
+        />
       )}
       </div>
       </div>
