@@ -136,6 +136,7 @@ export function useCipherApp() {
   const params = useParams();
   const [loggedIn, setLoggedIn] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [query, setQuery] = useState('');
   const [resultsQuery, setResultsQuery] = useState('');
   const [resultsBrand, setResultsBrand] = useState('');
@@ -161,6 +162,11 @@ export function useCipherApp() {
   const [reviewSearch, setReviewSearch] = useState('');
 
   const screen = routeToScreen(location.pathname);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
 
   useEffect(() => {
     setAnalysisOn(false);
@@ -332,6 +338,9 @@ export function useCipherApp() {
       loggedOut: !loggedIn,
       login,
       logout,
+      theme,
+      isDarkTheme: theme === 'dark',
+      setTheme,
       userMenuOpen,
       toggleUserMenu: () => setUserMenuOpen((open) => !open),
       closeUserMenu: () => setUserMenuOpen(false),
@@ -461,7 +470,7 @@ export function useCipherApp() {
     const overlayValues = buildOverlayValues({ addState, setAddState, confirmAdd, createCollection, collections, shareState, setShareState, addSharePerson, shareAccess, copyShareLink, setCollections, confirm, setConfirm, drawer, setDrawer, openProduct });
 
     return { ...base, ...resultValues, ...analysisValues, ...collectionValues, ...compareValues, ...overlayValues };
-  }, [addState, analysisOn, collectionId, collections, compareAttr, compareExcluded, compareMode, comparePinned, confirm, drawer, filterBrand, filterCat, loggedIn, location.pathname, productId, query, resultsBrand, resultsBrands, resultsQuery, reviewAttr, reviewSearch, reviewSent, screen, selectedBrands, shareState, sortBy, userMenuOpen]);
+  }, [addState, analysisOn, collectionId, collections, compareAttr, compareExcluded, compareMode, comparePinned, confirm, drawer, filterBrand, filterCat, loggedIn, location.pathname, productId, query, resultsBrand, resultsBrands, resultsQuery, reviewAttr, reviewSearch, reviewSent, screen, selectedBrands, shareState, sortBy, theme, userMenuOpen]);
 
   return values;
 }
