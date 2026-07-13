@@ -15,7 +15,7 @@ function ResultsPage({ app }) {
       <div className="filter-row">
         <span>Category</span>
         {app.resCatOpts?.map((item) => <Chip key={item.label} active={item.fg === 'var(--paper)'} style={{ color: item.fg, background: item.bg, borderColor: item.borderColor }} onClick={item.onClick}>{item.label}</Chip>)}
-        {app.resBrandActive ? <span className="active-filter">{app.resBrandActive}<button type="button" onClick={app.resClearBrand}>x</button></span> : null}
+        {app.resBrandFilters?.map((brand) => <span className="active-filter" key={brand.label}>{brand.label}<button type="button" onClick={brand.onRemove}>x</button></span>)}
       </div>
       <div className="card-grid card-grid--four">
         {app.resCards?.map((product) => <ProductCard key={product.id} product={product} onOpen={product.onOpen} onAdd={product.onAdd} />)}

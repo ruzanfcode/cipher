@@ -365,7 +365,6 @@ export function useCipherApp() {
         }
         return true;
       });
-      if (!list.length) list = PRODUCTS.slice();
       const categories = ['All', ...Array.from(new Set(list.map((item) => item.cat)))];
       if (filterCat !== 'All') list = list.filter((item) => item.cat === filterCat);
       if (filterBrand !== 'All') list = list.filter((item) => item.brand === filterBrand);
@@ -376,12 +375,13 @@ export function useCipherApp() {
         return 0;
       });
       const brandLabel = resultsBrands.length ? resultsBrands.join(', ') : resultsBrand;
-      resultValues.resHeading = brandLabel ? (q ? `Search results for "${resultsQuery}" in ${brandLabel}` : `Products from ${brandLabel}`) : q ? `Search results for "${resultsQuery}"` : 'All products';
+      const activeBrands = resultsBrands.length ? resultsBrands : resultsBrand ? [resultsBrand] : filterBrand !== 'All' ? [filterBrand] : [];
+      resultValues.resHeading = q ? `Search results for "${resultsQuery}"` : brandLabel ? `Products from ${brandLabel}` : 'All products';
       resultValues.resCount = `${list.length} product${list.length === 1 ? '' : 's'}`;
       resultValues.resCards = list.map((item) => makeCardVM(item.id, openProduct, openAdd));
       resultValues.resCatOpts = categories.map((label) => ({ label, ...chipStyle(filterCat === label), onClick: () => setFilterCat(label) }));
       resultValues.resSortOpts = [['relevant', 'Most relevant'], ['reviews', 'Most reviews'], ['positive', 'Most positive'], ['negative', 'Most negative']].map(([key, label]) => ({ label, ...chipStyle(sortBy === key), onClick: () => setSortBy(key) }));
-      resultValues.resBrandActive = filterBrand !== 'All' ? filterBrand : brandLabel;
+      resultValues.resBrandFilters = activeBrands.map((brand) => ({ label: brand, onRemove: () => { setResultsBrands((current) => current.filter((item) => item !== brand)); setSelectedBrands((current) => current.filter((item) => item !== brand)); if (resultsBrand === brand) setResultsBrand(''); if (filterBrand === brand) setFilterBrand('All'); } }));
       resultValues.resClearBrand = () => { setFilterBrand('All'); setResultsBrand(''); setResultsBrands([]); setSelectedBrands([]); };
     }
 
