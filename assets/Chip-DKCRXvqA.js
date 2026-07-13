@@ -1,1 +1,0 @@
-import{r as e}from"./index-CxeNrrpL.js";var t=e();function n({children:e,active:n=!1,onClick:r,className:i=``,style:a,sm:o=``}){return(0,t.jsx)(`button`,{className:`chip ${n?`chip--active`:``} ${i} ${o?`chip-sm`:``}`,style:a,type:`button`,onClick:r,children:e})}export{n as t};
