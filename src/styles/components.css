@@ -220,12 +220,27 @@
 .love-panel div small { color: #4d7d64; font-size: 12px; white-space: nowrap; }
 .complain-panel div span:first-child { color: #7a3620; font-size: 15px; font-weight: 500; }
 .complain-panel div small { color: #a5563a; font-size: 12px; white-space: nowrap; }
+:root[data-theme='dark'] .love-panel { border-color: rgba(143,196,164,0.28); }
+:root[data-theme='dark'] .complain-panel { border-color: rgba(224,139,112,0.28); }
+:root[data-theme='dark'] .love-panel h3,
+:root[data-theme='dark'] .love-panel div span:first-child,
+:root[data-theme='dark'] .love-panel div small { color: var(--pos); }
+:root[data-theme='dark'] .complain-panel h3,
+:root[data-theme='dark'] .complain-panel div span:first-child,
+:root[data-theme='dark'] .complain-panel div small { color: var(--con); }
+:root[data-theme='dark'] .love-panel div { border-bottom-color: rgba(143,196,164,0.18); }
+:root[data-theme='dark'] .complain-panel div { border-bottom-color: rgba(224,139,112,0.18); }
 .takeaway-panel { background: var(--ink); border-radius: 20px; color: var(--paper); margin-top: 52px; padding: 40px 44px; }
 .takeaway-panel .eyebrow, .takeaway-panel .section-eyebrow { color: rgba(243,240,233,0.55); letter-spacing: 0.18em; }
 .takeaway-panel h2 { font-size: 28px; margin: 6px 0 28px; }
 .takeaway-panel > div:last-child { display: grid; gap: 8px 40px; grid-template-columns: 1fr 1fr; }
 .takeaway-panel p { border-top: 1px solid rgba(243,240,233,0.14); display: flex; gap: 16px; margin: 0; padding: 15px 0; }
 .takeaway-panel p span { color: rgba(243,240,233,0.5); font-family: Newsreader, serif; font-size: 22px; min-width: 22px; }
+:root[data-theme='dark'] .takeaway-panel { background: #0f0e0c; border: 1px solid var(--line); color: var(--ink); }
+:root[data-theme='dark'] .takeaway-panel .eyebrow,
+:root[data-theme='dark'] .takeaway-panel .section-eyebrow { color: var(--muted); }
+:root[data-theme='dark'] .takeaway-panel p { border-top-color: rgba(243,240,233,0.14); color: var(--ink-2); }
+:root[data-theme='dark'] .takeaway-panel p span { color: var(--muted); }
 .review-controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
 .review-search { align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: flex; gap: 9px; margin-left: auto; min-width: 230px; padding: 8px 13px; }
 .review-search input { background: transparent; border: 0; flex: 1; font-size: 13.5px; outline: 0; }
