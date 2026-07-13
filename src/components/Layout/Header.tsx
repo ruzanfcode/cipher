@@ -14,7 +14,7 @@ function Header({ app }) {
         </nav>
         <div className="user-menu">
           <button className="user-menu__trigger" type="button" onClick={app.toggleUserMenu}>
-            <span>Mayathunnadase</span>
+            <span>Maya</span>
             <span className="avatar avatar--dark">M</span>
           </button>
           {app.userMenuOpen ? (
@@ -23,7 +23,7 @@ function Header({ app }) {
               <div className="user-menu__panel">
                 <div className="user-menu__profile">
                   <span className="avatar avatar--dark">M</span>
-                  <span><b title="Mayathisisfortes Chenisfortest">Mayathisisfortes Chenisfortest</b><small>MAS Account</small></span>
+                  <span><b title="Mayathisisfortes Chenisfortest">Maya Chen</b><small>MAS Account</small></span>
                   <div className="theme-toggle" aria-label="Theme">
                     <button className={!app.isDarkTheme ? 'active' : ''} type="button" onClick={() => app.setTheme('light')} aria-label="Use light mode" title="Light mode">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
