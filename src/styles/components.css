@@ -39,7 +39,11 @@
 .theme-toggle button { align-items: center; border-radius: 999px; color: var(--muted); display: inline-flex; height: 28px; justify-content: center; padding: 0; width: 28px; }
 .theme-toggle svg { display: block; }
 .theme-toggle button.active { background: var(--ink); color: var(--paper); }
-.user-menu { margin-left: auto; position: relative; }
+.user-menu { align-items: center; display: flex; gap: 8px; margin-left: auto; position: relative; }
+.theme-switch { align-items: center; background: var(--surface); border: 1px solid var(--line-2); border-radius: 999px; display: inline-flex; height: 28px; padding: 3px; width: 48px; }
+.theme-switch span { align-items: center; background: var(--ink); border-radius: 50%; color: var(--paper); display: inline-flex; height: 20px; justify-content: center; transform: translateX(0); transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease; width: 20px; }
+.theme-switch svg { display: block; }
+.theme-switch--dark span { transform: translateX(20px); }
 .user-menu__trigger { align-items: center; border-radius: 100px; display: flex; gap: 9px; padding: 4px 4px 4px 12px; }
 .user-menu__trigger:hover { background: var(--surface-3); }
 .user-menu__trigger span:first-child { color: var(--muted); font-size: 13px; }

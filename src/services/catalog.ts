@@ -169,7 +169,7 @@ export const COLLECTIONS_SEED = [
 ];
 
 export const PEOPLE = {
-  me: { name: 'Maya Chen', first: 'Maya', initials: 'MC', email: 'maya.chen@mas.com', me: true },
+  me: { name: 'Mayasomethingonetest Chenthisisfor test', first: 'Maya', initials: 'MC', email: 'maya.chen@mas.com', me: true },
   roster: [
     { name: 'Priya Nair', initials: 'PN', email: 'priya.nair@studio.com' },
     { name: 'Sofia Bianchi', initials: 'SB', email: 'sofia.bianchi@studio.com' },
