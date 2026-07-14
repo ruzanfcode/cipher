@@ -15,6 +15,7 @@ function CollectionDetailPage({ app }) {
           <div className="owner-row"><Facepile owner={collection.owner} /><span>{collection.owner.ownerLabel}</span><span>·</span><span>{collection.owner.accessLabel}</span></div>
         </div>
         <div className="detail-actions">
+          <button className="secondary-button" type="button" onClick={app.cdAskAi}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" /><path d="M8 9h8M8 13h5" /></svg>ASK AI</button>
           <button className="secondary-button" type="button" onClick={app.cdShare}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M16 12a4 4 0 1 0-4-4M8 12a4 4 0 1 0 4 4" /><path d="M2 21a7 7 0 0 1 11-1M13 20a7 7 0 0 1 9-4" /></svg>Share access</button>
           <button className="primary-button cd-compare-btn" type="button" onClick={app.cdCompare}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><path d="M3 3v18h18M8 15v3M13 10v8M18 6v12" /></svg>Compare Products</button>
         </div>

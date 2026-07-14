@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import SentimentBadge from './SentimentBadge';
 
 function ModalShell({ children, onClose, narrow = false, panelClass = '' }) {
@@ -67,6 +68,38 @@ export function ConfirmDialog({ app }) {
       <p className="confirm-message">{app.confirm.message}</p>
       <div className="confirm-actions"><button className="secondary-button" type="button" onClick={app.closeConfirm}>Cancel</button><button className="danger-button" type="button" onClick={app.doConfirm}>{app.confirm.confirmLabel}</button></div>
     </ModalShell>
+  );
+}
+
+export function AiChatOverlay({ app }) {
+  const chat = app.aiChat;
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (app.aiChatOpen) inputRef.current?.focus();
+  }, [app.aiChatOpen, chat?.focusKey]);
+
+  if (!app.aiChatOpen || !chat) return null;
+
+  return (
+    <aside className={`ai-chat-panel${chat.minimized ? ' ai-chat-panel--minimized' : ''}`} aria-label={`Ask AI about ${chat.title}`}>
+      <header className="ai-chat-panel__head" onClick={chat.onToggleMinimize} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); chat.onToggleMinimize(); } }} aria-label={`${chat.minimized ? 'Open' : 'Minimize'} chat`}>
+        <h3>{chat.title}</h3>
+        <div className="ai-chat-panel__tools">
+          {chat.minimized ? <button type="button" onClick={(event) => { event.stopPropagation(); chat.onRestore(); }} aria-label="Open chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><path d="M5 12h14" /><path d="M12 5v14" /></svg></button> : <button type="button" onClick={(event) => { event.stopPropagation(); chat.onMinimize(); }} aria-label="Minimize chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><path d="M5 12h14" /></svg></button>}
+          <button type="button" onClick={(event) => { event.stopPropagation(); chat.onClose(); }} aria-label="Close chat">×</button>
+        </div>
+      </header>
+      {!chat.minimized ? <>
+        <div className="ai-chat-panel__messages">
+          {chat.messages.map((message, index) => <p className={`ai-chat-bubble ai-chat-bubble--${message.role}`} key={`${message.role}-${index}`}>{message.text}</p>)}
+        </div>
+        <form className="ai-chat-panel__composer" onSubmit={chat.onSubmit}>
+          <input ref={inputRef} value={chat.input} onChange={chat.onInput} placeholder={chat.placeholder} />
+          <button type="submit" disabled={!chat.input.trim()} aria-label="Send message"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><path d="M22 2 11 13" /><path d="m22 2-7 20-4-9-9-4 20-7Z" /></svg></button>
+        </form>
+      </> : null}
+    </aside>
   );
 }
 

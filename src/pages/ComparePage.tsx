@@ -20,7 +20,7 @@ function CompareShell({ app, children }) {
           <div className="eyebrow left">Comparing</div>
           <h1>{app.cmp.name}</h1>
         </div>
-        <span className="compare-count">{app.cmp.countLabel}</span>
+        <div className="compare-head__actions"><span className="compare-count">{app.cmp.countLabel}</span><button className="secondary-button" type="button" onClick={app.cmp.askAi}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" /><path d="M8 9h8M8 13h5" /></svg>ASK AI</button></div>
       </div>
       <div className="mode-switch">
         {app.cmpModes.map((mode) => <Chip key={mode.key} style={{ color: mode.fg, background: mode.bg, borderColor: mode.borderColor }} onClick={mode.onClick}>{mode.label}</Chip>)}

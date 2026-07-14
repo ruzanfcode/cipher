@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Header from './components/Layout/Header';
-import { AddToCollectionModal, ConfirmDialog, EvidenceDrawer, ShareAccessModal } from './components/UI/Modals';
+import { AddToCollectionModal, AiChatOverlay, ConfirmDialog, EvidenceDrawer, ShareAccessModal } from './components/UI/Modals';
 import { useCipherApp } from './hooks/useCipherApp';
 
 const AnalysisPage = lazy(() => import('./pages/AnalysisPage'));
@@ -38,6 +38,7 @@ function App() {
         <ShareAccessModal app={app} />
         <ConfirmDialog app={app} />
         <EvidenceDrawer app={app} />
+        <AiChatOverlay app={app} />
       </Suspense>
     </div>
   );

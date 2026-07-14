@@ -54,6 +54,11 @@ function routeToScreen(pathname) {
   return 'discover';
 }
 
+function routeCollectionId(pathname) {
+  const match = pathname.match(/^\/collections\/([^/]+)/);
+  return match?.[1] || '';
+}
+
 function productImageVM(id, suffix = '') {
   const product = PRODUCT_MAP[id];
   const image = imageFor(id);
@@ -158,6 +163,7 @@ export function useCipherApp() {
   const [compareExcluded, setCompareExcluded] = useState({});
   const [comparePinned, setComparePinned] = useState([]);
   const [drawer, setDrawer] = useState<any>({ open: false, productId: null, attr: null });
+  const [chatState, setChatState] = useState<any>({ open: false, context: null, input: '', messages: [], focusKey: 0, minimized: false });
   const [reviewSent, setReviewSent] = useState('all');
   const [reviewAttr, setReviewAttr] = useState('all');
   const [reviewSearch, setReviewSearch] = useState('');
@@ -172,6 +178,12 @@ export function useCipherApp() {
   useEffect(() => {
     setAnalysisOn(false);
     setDrawer({ open: false, productId: null, attr: null });
+    setChatState((current) => {
+      const nextScreen = routeToScreen(location.pathname);
+      const nextCollectionId = routeCollectionId(location.pathname);
+      const keepCollectionChat = ['collectionDetail', 'compare'].includes(nextScreen) && ['collection', 'compare'].includes(current.context?.type) && current.context?.id === nextCollectionId;
+      return keepCollectionChat ? current : { ...current, open: false };
+    });
     if (location.pathname.endsWith('/compare')) {
       setCompareMode('summary');
       setCompareExcluded({});
@@ -208,6 +220,7 @@ export function useCipherApp() {
     setFilterBrand('All');
     setFilterCat('All');
     setFilterCats([]);
+    setChatState((current) => ({ ...current, open: false }));
     navigate('/results');
     scrollTop();
   }
@@ -240,6 +253,33 @@ export function useCipherApp() {
     } else {
       setAnalysisOn(true);
     }
+  }
+
+  function openAskAi(id) {
+    const item = PRODUCT_MAP[id];
+    if (!item) return;
+    setChatState({ open: true, context: { type: 'product', id }, input: '', messages: [{ role: 'ai', text: `Ask me about ${item.name}'s sentiment, reviews, strengths, or concerns.` }], focusKey: Date.now(), minimized: false });
+  }
+
+  function openCollectionAskAi(id) {
+    const collection = collections.find((item) => item.id === id);
+    if (!collection) return;
+    setChatState({ open: true, context: { type: 'collection', id }, input: '', messages: [{ role: 'ai', text: `Ask me about ${collection.name}, its products, shared themes, or design opportunities.` }], focusKey: Date.now(), minimized: false });
+  }
+
+  function openCompareAskAi(id) {
+    const collection = collections.find((item) => item.id === id);
+    if (!collection) return;
+    const activeCount = collection.products.filter((product) => !compareExcluded[product]).length;
+    setChatState({ open: true, context: { type: 'compare', id }, input: '', messages: [{ role: 'ai', text: `Ask me to compare the ${activeCount} selected products in ${collection.name}.` }], focusKey: Date.now(), minimized: false });
+  }
+
+  function sendAiQuestion(event) {
+    event.preventDefault();
+    const question = chatState.input.trim();
+    const answer = buildAiChatAnswer(chatState.context, collections, compareExcluded);
+    if (!question || !answer) return;
+    setChatState((current) => ({ ...current, input: '', messages: [...current.messages, { role: 'user', text: question }, { role: 'ai', text: answer }] }));
   }
 
   function openCollection(id) {
@@ -420,13 +460,13 @@ export function useCipherApp() {
       analysisValues.showAnalysis = true;
       analysisValues.analysisIsOverlay = analysisOn && screen !== 'analysis';
       analysisValues.analysisIsPage = screen === 'analysis';
-      analysisValues.closeAnalysisOverlay = () => setAnalysisOn(false);
+      analysisValues.closeAnalysisOverlay = () => { setAnalysisOn(false); setChatState((current) => ({ ...current, open: false })); };
       analysisValues.pv = {
         ...productImageVM(item.id), id: item.id, brand: item.brand, name: item.name, cat: item.cat, reviewsLabel: `${item.reviews} reviews analyzed`, origin: `View on ${item.brand.replace('’s', 's').split(' ')[0]}.com`,
         confLabel: `${confidence.label} Confidence`, confFg: confidenceTone.fg, confBg: confidenceTone.bg, low: confidence.tone === 'low' || confidence.tone === 'early',
         lowMsg: `Low confidence - only ${item.reviews} reviews available. Treat this as an early signal, not a strong recommendation.`,
         pulseLabel: pulseLabel(item.pulse), pulseFg: sentiment.fg, pulseBg: sentiment.bg, pulseText: item.pulseText,
-        pos: split[0], neu: split[1], neg: split[2], onAdd: () => openAdd(item.id),
+        pos: split[0], neu: split[1], neg: split[2], onAdd: () => openAdd(item.id), onAskAi: () => openAskAi(item.id),
       };
       analysisValues.pvAttrs = ATTRIBUTES.map((attribute) => {
         const attr = item.attrs[attribute.key];
@@ -474,13 +514,20 @@ export function useCipherApp() {
       });
       collectionValues.cdCompare = () => startCompare(collection.id);
       collectionValues.cdShare = () => openShare(collection.id);
+      collectionValues.cdAskAi = () => openCollectionAskAi(collection.id);
     }
 
-    const compareValues = buildCompareValues(screen, collections, collectionId, compareMode, compareAttr, compareExcluded, comparePinned, openCollection, openProduct, setCompareMode, setCompareAttr, toggleExclude, togglePin, setDrawer);
+    const compareValues = buildCompareValues(screen, collections, collectionId, compareMode, compareAttr, compareExcluded, comparePinned, openCollection, openProduct, openCompareAskAi, setCompareMode, setCompareAttr, toggleExclude, togglePin, setDrawer);
     const overlayValues = buildOverlayValues({ addState, setAddState, confirmAdd, createCollection, collections, shareState, setShareState, addSharePerson, shareAccess, copyShareLink, setCollections, confirm, setConfirm, drawer, setDrawer, openProduct });
+    const chatTitle = chatTitleFor(chatState.context, collections);
+    const chatPlaceholder = chatPlaceholderFor(chatState.context);
+    const chatValues = chatState.open && chatTitle ? {
+      aiChatOpen: true,
+      aiChat: { title: chatTitle, placeholder: chatPlaceholder, minimized: chatState.minimized, focusKey: chatState.focusKey, messages: chatState.messages, input: chatState.input, onInput: (event) => setChatState((current) => ({ ...current, input: event.target.value })), onSubmit: sendAiQuestion, onToggleMinimize: () => setChatState((current) => ({ ...current, minimized: !current.minimized, focusKey: current.minimized ? Date.now() : current.focusKey })), onMinimize: () => setChatState((current) => ({ ...current, minimized: true })), onRestore: () => setChatState((current) => ({ ...current, minimized: false, focusKey: Date.now() })), onClose: () => setChatState((current) => ({ ...current, open: false })) },
+    } : { aiChatOpen: false };
 
-    return { ...base, ...resultValues, ...analysisValues, ...collectionValues, ...compareValues, ...overlayValues };
-  }, [addState, analysisOn, collectionId, collections, compareAttr, compareExcluded, compareMode, comparePinned, confirm, drawer, filterBrand, filterCat, filterCats, loggedIn, location.pathname, productId, query, resultsBrand, resultsBrands, resultsQuery, reviewAttr, reviewSearch, reviewSent, screen, selectedBrands, shareState, sortBy, theme, userMenuOpen]);
+    return { ...base, ...resultValues, ...analysisValues, ...collectionValues, ...compareValues, ...overlayValues, ...chatValues };
+  }, [addState, analysisOn, chatState, collectionId, collections, compareAttr, compareExcluded, compareMode, comparePinned, confirm, drawer, filterBrand, filterCat, filterCats, loggedIn, location.pathname, productId, query, resultsBrand, resultsBrands, resultsQuery, reviewAttr, reviewSearch, reviewSent, screen, selectedBrands, shareState, sortBy, theme, userMenuOpen]);
 
   return values;
 }
@@ -505,7 +552,41 @@ function ownerVM(collection): any {
   };
 }
 
-function buildCompareValues(screen, collections, collectionId, compareMode, compareAttr, compareExcluded, comparePinned, openCollection, openProduct, setCompareMode, setCompareAttr, toggleExclude, togglePin, setDrawer): any {
+function chatTitleFor(context, collections) {
+  if (!context) return '';
+  if (context.type === 'product') return PRODUCT_MAP[context.id]?.name || '';
+  const collection = collections.find((item) => item.id === context.id);
+  if (!collection) return '';
+  return context.type === 'compare' ? `${collection.name} comparison` : collection.name;
+}
+
+function chatPlaceholderFor(context) {
+  if (context?.type === 'collection') return 'Ask about this collection or collection products';
+  if (context?.type === 'compare') return 'Ask about this comparison or collection products';
+  return 'Ask about this product';
+}
+
+function buildAiChatAnswer(context, collections, compareExcluded) {
+  if (!context) return '';
+  if (context.type === 'product') {
+    const item = PRODUCT_MAP[context.id];
+    if (!item) return '';
+    const split = SENTIMENT_SPLIT[item.pulse];
+    return `${item.name} is trending ${pulseLabel(item.pulse).toLowerCase()} with ${split[0]}% positive signal. Customers most often praise ${item.loves[0]?.t.toLowerCase() || 'the product experience'}, while the main concern is ${item.complaints[0]?.t.toLowerCase() || 'mixed review feedback'}.`;
+  }
+  const collection = collections.find((item) => item.id === context.id);
+  if (!collection) return '';
+  const ids = context.type === 'compare' ? collection.products.filter((id) => !compareExcluded[id]) : collection.products;
+  const products = ids.map((id) => PRODUCT_MAP[id]).filter(Boolean);
+  if (!products.length) return `There are no selected products in ${collection.name} to summarize right now.`;
+  const positiveShare = Math.round(products.reduce((sum, product) => sum + SENTIMENT_SPLIT[product.pulse][0], 0) / products.length);
+  const topPraise = products[0]?.loves[0]?.t.toLowerCase() || 'comfort';
+  const topConcern = products[0]?.complaints[0]?.t.toLowerCase() || 'fit consistency';
+  if (context.type === 'compare') return `${collection.name} comparison has ${products.length} selected products averaging ${positiveShare}% positive signal. The clearest strength is ${topPraise}, while ${topConcern} is the main area to inspect across products.`;
+  return `${collection.name} includes ${products.length} products averaging ${positiveShare}% positive signal. A useful starting point is ${topPraise}, with ${topConcern} as the key concern to watch.`;
+}
+
+function buildCompareValues(screen, collections, collectionId, compareMode, compareAttr, compareExcluded, comparePinned, openCollection, openProduct, openCompareAskAi, setCompareMode, setCompareAttr, toggleExclude, togglePin, setDrawer): any {
   if (screen !== 'compare') return {};
   const collection = collections.find((item) => item.id === collectionId) || collections[0];
   const allIds = collection.products;
@@ -534,7 +615,7 @@ function buildCompareValues(screen, collections, collectionId, compareMode, comp
   const weakest = sorted.slice(-3).reverse();
   const modeDefs = [['summary', 'Summary'], ['heatmap', 'Heatmap'], ['side', 'Side-by-side'], ['attribute', 'Attribute view'], ['opportunity', 'Opportunities']];
   const out: any = {
-    cmp: { name: collection.name, countLabel: `${activeIds.length} of ${allIds.length} selected`, startCompareBack: () => openCollection(collection.id) },
+    cmp: { name: collection.name, countLabel: `${activeIds.length} of ${allIds.length} selected`, startCompareBack: () => openCollection(collection.id), askAi: () => openCompareAskAi(collection.id) },
     cmpSelector: allIds.map((id) => ({ id, brand: PRODUCT_MAP[id].brand, name: PRODUCT_MAP[id].name, on: !compareExcluded[id], pin: comparePinned.includes(id), onToggle: () => toggleExclude(id), onPin: () => togglePin(id) })),
     cmpModes: modeDefs.map(([key, label]) => ({ key, label, ...chipStyle(compareMode === key), onClick: () => setCompareMode(key) })),
     cmpIsSum: compareMode === 'summary', cmpIsHeat: compareMode === 'heatmap', cmpIsSide: compareMode === 'side', cmpIsAttr: compareMode === 'attribute', cmpIsOpp: compareMode === 'opportunity',

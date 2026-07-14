@@ -214,8 +214,12 @@
 .analysis-section { margin-top: 56px; }
 .analysis-page .analysis-section:first-of-type { margin-top: 64px; }
 .analysis-top .full-button { margin-top: 16px; }
-.analysis-add-btn { align-items: center; background: var(--ink); border-radius: 12px; color: var(--paper); display: flex; font-size: 15px; font-weight: 600; gap: 9px; justify-content: center; margin-top: 16px; padding: 15px; width: 100%; }
+.analysis-action-row { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; margin-top: 16px; }
+.analysis-add-btn, .analysis-ask-btn { align-items: center; border-radius: 12px; display: flex; font-size: 15px; font-weight: 600; gap: 9px; justify-content: center; padding: 15px; width: 100%; }
+.analysis-add-btn { background: var(--ink); color: var(--paper); }
 .analysis-add-btn:hover { background: var(--ink-2); }
+.analysis-ask-btn { background: var(--surface); border: 1px solid var(--line-2); color: var(--ink); }
+.analysis-ask-btn:hover { background: var(--surface-2); border-color: var(--ink); }
 .analysis-section h2 { font-size: 27px; margin-bottom: 4px; }
 .analysis-section > p { color: var(--muted); font-size: 14.5px; margin: 0 0 22px; }
 .attribute-grid { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
@@ -278,6 +282,7 @@
 .compare-head { align-items: flex-end; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; margin-bottom: 20px; }
 .compare-head h1 { font-size: 30px; margin-top: 6px; }
 .compare-count { color: var(--muted); font-size: 13px; font-weight: 500; line-height: 1.2; }
+.compare-head__actions { align-items: center; display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
 .mode-switch { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: flex; gap: 6px; margin-bottom: 18px; padding: 5px; width: fit-content; }
 .mode-switch .chip { border: none; border-radius: 8px; font-size: 13.5px; font-weight: 600; padding: 9px 16px; }
 .compare-selector { background: var(--surface-2); border: 1px solid var(--line); border-radius: 13px; margin-bottom: 24px; padding: 14px 16px; }
@@ -478,6 +483,22 @@
 .confirm-panel .confirm-actions button { flex: 1; height: 41px; justify-content: center; padding: 0 18px; }
 .confirm-panel .danger-button { background: var(--con); border-radius: 9px; color: #fff; }
 .confirm-panel .danger-button:hover { background: #a93f26; }
+.ai-chat-panel { animation: slideUp 0.26s cubic-bezier(0.2,0.8,0.3,1); background: var(--surface); border: 1px solid var(--line-2); border-radius: 18px 18px 0 0; bottom: 0; box-shadow: 0 -18px 60px -26px rgba(0,0,0,0.45); display: flex; flex-direction: column; max-height: min(560px, 78vh); min-height: 420px; overflow: hidden; position: fixed; right: 28px; width: min(390px, calc(100vw - 32px)); z-index: 70; }
+.ai-chat-panel--minimized { min-height: 0; }
+.ai-chat-panel__head { align-items: center; background: var(--ink); color: var(--paper); cursor: pointer; display: flex; justify-content: space-between; min-height: 58px; padding: 14px 16px 14px 18px; }
+.ai-chat-panel__head:focus-visible { outline: 2px solid var(--paper); outline-offset: -5px; }
+.ai-chat-panel__head h3 { font-size: 15.5px; font-weight: 600; line-height: 1.2; margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-chat-panel__head button { align-items: center; border-radius: 50%; color: rgba(243,240,233,0.75); display: flex; font-size: 20px; height: 30px; justify-content: center; width: 30px; }
+.ai-chat-panel__head button:hover { background: rgba(243,240,233,0.12); color: var(--paper); }
+.ai-chat-panel__tools { display: flex; flex-shrink: 0; gap: 4px; margin-left: 12px; }
+.ai-chat-panel__messages { display: flex; flex: 1; flex-direction: column; gap: 10px; overflow: auto; padding: 18px 16px; }
+.ai-chat-bubble { border-radius: 15px; font-size: 13.5px; line-height: 1.45; margin: 0; max-width: 84%; padding: 11px 13px; }
+.ai-chat-bubble--ai { align-self: flex-start; background: var(--surface-2); color: var(--ink-2); }
+.ai-chat-bubble--user { align-self: flex-end; background: var(--ink); color: var(--paper); }
+.ai-chat-panel__composer { align-items: center; border-top: 1px solid var(--line); display: flex; gap: 8px; padding: 12px; }
+.ai-chat-panel__composer input { background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 999px; color: var(--ink); flex: 1; font-size: 13.5px; min-width: 0; outline: 0; padding: 11px 13px; }
+.ai-chat-panel__composer button { align-items: center; background: var(--ink); border-radius: 50%; color: var(--paper); display: flex; flex-shrink: 0; height: 42px; justify-content: center; padding: 0; width: 42px; }
+.ai-chat-panel__composer button:disabled { background: var(--surface-3); color: var(--muted); cursor: not-allowed; opacity: 0.65; }
 .drawer-backdrop { background: rgba(27,26,23,0.35); display: flex; justify-content: flex-end; z-index: 60; }
 .evidence-drawer { animation: slideL 0.3s cubic-bezier(0.2,0.8,0.3,1); background: var(--surface); box-shadow: -20px 0 60px -20px rgba(0,0,0,0.4); height: 100%; max-width: 92vw; overflow: auto; padding: 26px 28px; width: 440px; }
 .drawer-head { align-items: center; display: flex; justify-content: space-between; margin-bottom: 18px; } .drawer-head span { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; } .drawer-head button { color: var(--muted); font-size: 20px; }
@@ -513,5 +534,8 @@
   .search-box .primary-button { width: 100%; }
   .card-grid--four, .card-grid--three, .brand-grid, .attribute-grid, .love-complain-grid, .summary-grid, .review-grid, .attr-product-grid { grid-template-columns: 1fr; }
   .results-header, .collection-detail-head, .compare-head { align-items: stretch; flex-direction: column; }
+  .compare-head__actions { align-items: stretch; flex-direction: column; justify-content: flex-start; }
+  .analysis-action-row { grid-template-columns: 1fr; }
+  .ai-chat-panel { left: 0; max-height: 74vh; min-height: 380px; right: 0; width: 100%; }
   .detail-actions, .confirm-actions { flex-direction: column; }
 }

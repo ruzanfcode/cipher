@@ -28,7 +28,10 @@ function AnalysisPage({ app, overlay = false }) {
               <SplitBar pos={pv.pos} neu={pv.neu} neg={pv.neg} />
               <div className="split-legend"><span><i className="pos" />Positive <b>{pv.pos}%</b></span><span><i className="neu" />Neutral <b>{pv.neu}%</b></span><span><i className="neg" />Negative <b>{pv.neg}%</b></span></div>
             </div>
-            <button className="analysis-add-btn" type="button" onClick={pv.onAdd}><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>Add to Collection</button>
+            <div className="analysis-action-row">
+              <button className="analysis-add-btn" type="button" onClick={pv.onAdd}><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>Add to Collection</button>
+              <button className="analysis-ask-btn" type="button" onClick={pv.onAskAi}><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" /><path d="M8 9h8M8 13h5" /></svg>ASK AI</button>
+            </div>
           </div>
         </section>
         <section className="analysis-section">
