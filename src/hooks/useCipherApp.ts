@@ -145,6 +145,7 @@ export function useCipherApp() {
   const [sortBy, setSortBy] = useState('relevant');
   const [filterBrand, setFilterBrand] = useState('All');
   const [filterCat, setFilterCat] = useState('All');
+  const [filterCats, setFilterCats] = useState<string[]>([]);
   const [productId, setProductId] = useState('nike-legging');
   const [analysisOn, setAnalysisOn] = useState(false);
   const [collections, setCollections] = useState(() => COLLECTIONS_SEED.map((collection) => ({ ...collection, products: [...collection.products], access: [...collection.access] })));
@@ -206,6 +207,7 @@ export function useCipherApp() {
     setSelectedBrands([]);
     setFilterBrand('All');
     setFilterCat('All');
+    setFilterCats([]);
     navigate('/results');
     scrollTop();
   }
@@ -217,6 +219,7 @@ export function useCipherApp() {
     setResultsBrands(selectedBrands);
     setFilterBrand('All');
     setFilterCat('All');
+    setFilterCats([]);
     navigate('/results');
     scrollTop();
   }
@@ -375,7 +378,9 @@ export function useCipherApp() {
         return true;
       });
       const categories = ['All', ...Array.from(new Set(list.map((item) => item.cat)))];
-      if (filterCat !== 'All') list = list.filter((item) => item.cat === filterCat);
+      const categoryOptions = categories.filter((label) => label !== 'All');
+      if (filterCats.length) list = list.filter((item) => filterCats.includes(item.cat));
+      else if (filterCat !== 'All') list = list.filter((item) => item.cat === filterCat);
       if (filterBrand !== 'All') list = list.filter((item) => item.brand === filterBrand);
       list = list.slice().sort((a, b) => {
         if (sortBy === 'reviews') return b.reviews - a.reviews;
@@ -383,13 +388,18 @@ export function useCipherApp() {
         if (sortBy === 'negative') return SENTIMENT_SPLIT[b.pulse][2] - SENTIMENT_SPLIT[a.pulse][2];
         return 0;
       });
-      const brandLabel = resultsBrands.length ? resultsBrands.join(', ') : resultsBrand;
       const activeBrands = resultsBrands.length ? resultsBrands : resultsBrand ? [resultsBrand] : filterBrand !== 'All' ? [filterBrand] : [];
-      resultValues.resHeading = q ? `Search results for "${resultsQuery}"` : brandLabel ? `Products from ${brandLabel}` : 'All products';
+      resultValues.resHeading = q ? `Search results for "${resultsQuery}"` : 'All Products';
       resultValues.resCount = `${list.length} product${list.length === 1 ? '' : 's'}`;
       resultValues.resCards = list.map((item) => makeCardVM(item.id, openProduct, openAdd));
-      resultValues.resCatOpts = categories.map((label) => ({ label, ...chipStyle(filterCat === label), onClick: () => setFilterCat(label) }));
-      resultValues.resSortOpts = [['relevant', 'Most relevant'], ['reviews', 'Most reviews'], ['positive', 'Most positive'], ['negative', 'Most negative']].map(([key, label]) => ({ label, ...chipStyle(sortBy === key), onClick: () => setSortBy(key) }));
+      resultValues.resCategorySummary = filterCats.length ? `${filterCats.length} selected` : 'All categories';
+      resultValues.resBrandSummary = activeBrands.length ? `${activeBrands.length} selected` : 'All brands';
+      resultValues.resCategoryOptions = categoryOptions.map((label) => ({ label, selected: filterCats.includes(label), onToggle: () => { setFilterCat('All'); setFilterCats((current) => (current.includes(label) ? current.filter((item) => item !== label) : [...current, label])); } }));
+      resultValues.resBrandOptions = BRANDS.map((label) => ({ label, selected: activeBrands.includes(label), onToggle: () => { setFilterBrand('All'); setResultsBrand(''); setResultsBrands((current) => (current.includes(label) ? current.filter((item) => item !== label) : [...current, label])); setSelectedBrands((current) => (current.includes(label) ? current.filter((item) => item !== label) : [...current, label])); } }));
+      resultValues.resCategoryFilters = filterCats.map((label) => ({ label, onRemove: () => setFilterCats((current) => current.filter((item) => item !== label)) }));
+      resultValues.resSortOpts = [['relevant', 'Most relevant'], ['reviews', 'Most reviews'], ['positive', 'Most positive'], ['negative', 'Most negative']].map(([key, label]) => ({ key, label, ...chipStyle(sortBy === key), onClick: () => setSortBy(key) }));
+      resultValues.resSortValue = sortBy;
+      resultValues.onSortChange = (event) => setSortBy(event.target.value);
       resultValues.resBrandFilters = activeBrands.map((brand) => ({ label: brand, onRemove: () => { setResultsBrands((current) => current.filter((item) => item !== brand)); setSelectedBrands((current) => current.filter((item) => item !== brand)); if (resultsBrand === brand) setResultsBrand(''); if (filterBrand === brand) setFilterBrand('All'); } }));
       resultValues.resClearBrand = () => { setFilterBrand('All'); setResultsBrand(''); setResultsBrands([]); setSelectedBrands([]); };
     }
@@ -470,7 +480,7 @@ export function useCipherApp() {
     const overlayValues = buildOverlayValues({ addState, setAddState, confirmAdd, createCollection, collections, shareState, setShareState, addSharePerson, shareAccess, copyShareLink, setCollections, confirm, setConfirm, drawer, setDrawer, openProduct });
 
     return { ...base, ...resultValues, ...analysisValues, ...collectionValues, ...compareValues, ...overlayValues };
-  }, [addState, analysisOn, collectionId, collections, compareAttr, compareExcluded, compareMode, comparePinned, confirm, drawer, filterBrand, filterCat, loggedIn, location.pathname, productId, query, resultsBrand, resultsBrands, resultsQuery, reviewAttr, reviewSearch, reviewSent, screen, selectedBrands, shareState, sortBy, theme, userMenuOpen]);
+  }, [addState, analysisOn, collectionId, collections, compareAttr, compareExcluded, compareMode, comparePinned, confirm, drawer, filterBrand, filterCat, filterCats, loggedIn, location.pathname, productId, query, resultsBrand, resultsBrands, resultsQuery, reviewAttr, reviewSearch, reviewSent, screen, selectedBrands, shareState, sortBy, theme, userMenuOpen]);
 
   return values;
 }

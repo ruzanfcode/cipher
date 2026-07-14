@@ -14,14 +14,9 @@ function DiscoverPage({ app }) {
             {app.isUrl ? <span className="url-detected">URL detected</span> : null}
             <button className="primary-button search-button" type="button" onClick={() => app.doSearch()}>Search</button>
           </div>
-          <div className="trend-row">
-            <span>Try</span>
-            {app.trending.map((item) => <button type="button" key={item.label} onClick={item.onClick}>{item.label}</button>)}
-          </div>
         </div>
       </section>
       <section className="brand-jump">
-        <div className="section-eyebrow-product">Jump to a brand</div>
         <div className="brand-grid">
           {app.brands.map((brand) => <button className={`brand-tile lift-card${brand.selected ? ' brand-tile--selected' : ''}`} type="button" key={brand.name} onClick={brand.onClick}>{brand.name}</button>)}
         </div>

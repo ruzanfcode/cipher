@@ -84,12 +84,12 @@
 .trend-row span { color: var(--muted); font-size: 13px; }
 .trend-row button { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; color: var(--ink-2); font-size: 13px; padding: 7px 14px; }
 .trend-row button:hover { border-color: var(--ink); color: var(--ink); }
-.brand-jump { padding: 44px 0 20px; }
+.brand-jump { padding: 34px 0 20px; }
 .brand-jump .section-eyebrow-product { text-align: center; }
-.brand-grid { display: grid; gap: 12px; grid-template-columns: repeat(6, 1fr); margin-top: 22px; }
+.brand-grid { display: grid; gap: 12px; grid-template-columns: repeat(6, 1fr); margin-top: 0; }
 .brand-tile { align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: flex; font-family: Newsreader, serif; font-size: 18px; font-weight: 500; height: 66px; justify-content: center; }
-.brand-tile--selected { background: var(--surface); border-color: rgba(27, 26, 23, 0.42); box-shadow: inset 0 0 0 1px rgba(27, 26, 23, 0.18); color: var(--ink); }
-.brand-tile--selected:hover { background: var(--surface); color: var(--ink); }
+.brand-tile--selected { background: var(--ink); border-color: var(--ink); box-shadow: 0 14px 34px -28px rgba(27, 26, 23, 0.55); color: var(--paper); }
+.brand-tile--selected:hover { background: var(--ink); color: var(--paper); }
 .recent-section { padding: 40px 0 90px; }
 .section-heading { align-items: baseline; display: flex; justify-content: space-between; margin-bottom: 20px; }
 .section-heading h2, .page-intro h1, .collection-detail-head h1, .analysis-section h2, .takeaway-panel h2, .compare-head h1 { font-family: Newsreader, serif; font-weight: 500; letter-spacing: -0.01em; margin: 0; }
@@ -130,14 +130,34 @@
 .product-card__strengths b { font-weight: 500; margin-left: auto; }
 .up { color: var(--pos); } .down { color: var(--con); }
 
-.results-header { align-items: flex-end; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; }
+.results-header { align-items: flex-end; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; margin-bottom: 26px; }
 .results-header h1 { font-family: Newsreader, serif; font-size: 34px; font-weight: 500; letter-spacing: -0.01em; margin: 0; }
+.results-controls { align-items: flex-end; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.sort-select { align-items: flex-start; display: flex; flex-direction: column; gap: 6px; min-width: 160px; position: relative; }
+.sort-select span { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; line-height: 1; padding-left: 13px; }
+.sort-select select { appearance: none; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--ink); font-family: inherit; font-size: 13px; font-weight: 600; height: 40px; line-height: 1.2; margin: 0; min-width: 160px; outline: 0; padding: 0 34px 0 13px; width: 100%; }
+.sort-select::after { bottom: 20px; color: var(--muted); content: '⌄'; font-size: 14px; pointer-events: none; position: absolute; right: 13px; transform: translateY(50%); }
 .chip-row, .filter-row { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-row > span, .filter-row > span:first-child { color: var(--muted); font-size: 12px; letter-spacing: 0.04em; }
 .chip { border: 1px solid var(--line); border-radius: 20px; font-size: 13px; font-weight: 500; padding: 7px 14px; }
 .chip-sm { border: 1px solid var(--line); border-radius: 20px; font-size: 12.5px; font-weight: 500; padding: 6px 12px; }
 .chip:hover, .chip-sm:hover { border-color: var(--ink) !important; }
 .filter-row { border-bottom: 1px solid var(--line); margin: 22px 0 26px; padding-bottom: 22px; }
+.filter-dropdowns { display: flex; flex-wrap: wrap; gap: 10px; }
+.filter-dropdown { position: relative; }
+.filter-dropdown summary { align-items: flex-start; color: var(--ink); cursor: pointer; display: flex; flex-direction: column; gap: 6px; list-style: none; min-width: 160px; position: relative; }
+.filter-dropdown summary::-webkit-details-marker { display: none; }
+.filter-dropdown summary::after { bottom: 20px; color: var(--muted); content: '⌄'; font-size: 14px; position: absolute; right: 13px; transform: translateY(50%); }
+.filter-dropdown[open] summary b { border-color: var(--line-2); }
+.filter-dropdown summary span { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; line-height: 1; padding-left: 13px; text-transform: uppercase; }
+.filter-dropdown summary b { align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: flex; font-size: 13px; font-weight: 600; height: 40px; line-height: 1.2; padding: 0 34px 0 13px; width: 100%; }
+.filter-dropdown__panel { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; box-shadow: 0 18px 46px -28px rgba(27,26,23,0.45); display: flex; flex-direction: column; gap: 3px; left: 0; max-height: 260px; min-width: 210px; overflow: auto; padding: 7px; position: absolute; top: calc(100% + 8px); z-index: 20; }
+.filter-dropdown__panel button { align-items: center; border-radius: 9px; color: var(--ink-2); display: flex; font-size: 13.5px; gap: 9px; padding: 9px 10px; text-align: left; }
+.filter-dropdown__panel button:hover { background: var(--surface-2); color: var(--ink); }
+.filter-dropdown__panel button.selected { background: var(--ink); color: var(--paper); }
+.filter-dropdown__panel i { align-items: center; border: 1px solid var(--line-2); border-radius: 5px; display: inline-flex; flex-shrink: 0; font-size: 10px; font-style: normal; font-weight: 700; height: 16px; justify-content: center; width: 16px; }
+.filter-dropdown__panel button.selected i { border-color: var(--paper); }
+.selected-filter-row { display: flex; flex-wrap: wrap; gap: 8px; min-height: 0; }
 .active-filter { align-items: center; background: var(--ink); border-radius: 20px; color: var(--paper) !important; display: inline-flex; font-size: 13px; font-weight: 600; gap: 8px; letter-spacing: 0 !important; margin-left: 6px; padding: 7px 8px 7px 14px; }
 .active-filter button { background: rgba(255,255,255,0.2); border-radius: 50%; color: var(--paper); height: 18px; width: 18px; }
 
