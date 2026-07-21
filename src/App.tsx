@@ -5,12 +5,16 @@ import { AddToCollectionModal, AiChatOverlay, ConfirmDialog, EvidenceDrawer, Sha
 import { useCipherApp } from './hooks/useCipherApp';
 
 const AnalysisPage = lazy(() => import('./pages/AnalysisPage'));
+const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const CollectionDetailPage = lazy(() => import('./pages/CollectionDetailPage'));
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage'));
 const ComparePage = lazy(() => import('./pages/ComparePage'));
+const DataManagementPage = lazy(() => import('./pages/DataManagementPage'));
 const DiscoverPage = lazy(() => import('./pages/DiscoverPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const ResultsPage = lazy(() => import('./pages/ResultsPage'));
+const UserManagementPage = lazy(() => import('./pages/UserManagementPage'));
 
 function App() {
   const app = useCipherApp();
@@ -27,6 +31,11 @@ function App() {
             <Route path="/discover" element={<DiscoverPage app={app} />} />
             <Route path="/results" element={<ResultsPage app={app} />} />
             <Route path="/analysis/:productId" element={<AnalysisPage app={app} />} />
+            <Route path="/activities" element={<ActivitiesPage app={app} />} />
+            <Route path="/analytics" element={<AnalyticsPage app={app} />} />
+            <Route path="/admin/users" element={<UserManagementPage app={app} />} />
+            <Route path="/admin/users/:sbuId" element={<UserManagementPage app={app} />} />
+            <Route path="/admin/data" element={<DataManagementPage app={app} />} />
             <Route path="/collections" element={<CollectionsPage app={app} />} />
             <Route path="/collections/:collectionId" element={<CollectionDetailPage app={app} />} />
             <Route path="/collections/:collectionId/compare" element={<ComparePage app={app} />} />

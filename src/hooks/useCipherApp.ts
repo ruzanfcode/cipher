@@ -46,6 +46,9 @@ function scrollTop() {
 }
 
 function routeToScreen(pathname) {
+  if (pathname.startsWith('/activities')) return 'activities';
+  if (pathname.startsWith('/analytics')) return 'analytics';
+  if (pathname.startsWith('/admin')) return 'admin';
   if (pathname.startsWith('/results')) return 'results';
   if (pathname.startsWith('/analysis')) return 'analysis';
   if (pathname.startsWith('/collections/') && pathname.endsWith('/compare')) return 'compare';
@@ -392,6 +395,7 @@ export function useCipherApp() {
       goResultsAll,
       navDisc: ['discover', 'results', 'analysis'].includes(screen),
       navCol: ['collections', 'collectionDetail', 'compare'].includes(screen),
+      navAdmin: screen === 'admin',
       query,
       setQuery,
       isUrl: /^https?:\/\/|www\.|\.com|\.co/i.test(query.trim()),
